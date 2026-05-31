@@ -3,4 +3,4 @@ lib
 node_modules
 package-lock.json
 local.js
-src/__customtests
+.npm
