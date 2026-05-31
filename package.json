@@ -1,0 +1,26 @@
+{
+  "name": "json-workflow",
+  "version": "0.0.1",
+  "description": "transform fields and check conditions using JSON schema",
+  "homepage": "https://github.com/dmytro-vydysh/json-workflow#readme",
+  "bugs": {
+    "url": "https://github.com/dmytro-vydysh/json-workflow/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmytro-vydysh/json-workflow.git"
+  },
+  "license": "MIT",
+  "author": "Dmytro Vydysh",
+  "type": "commonjs",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.11",
+    "typescript": "^6.0.3"
+  }
+}

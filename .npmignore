@@ -1,0 +1,13 @@
+node_modules
+src
+lib/__tests__
+lib/**/*.test.js
+jest.config.js
+tsconfig.json
+.npmrc
+package-lock.json
+local.js
+.env
+.env.*
+!.env.example
+.vscode
