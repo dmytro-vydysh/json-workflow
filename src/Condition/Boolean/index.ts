@@ -1,3 +1,4 @@
+import { JWContext } from "../../Resolver/types";
 import { JWChecker } from "../../utils/check";
 
 /**
@@ -10,7 +11,7 @@ export class JWBooleanCondition {
    * @param value value to check
    * @return true if value is true, false otherwise
    */
-  public static async is_true(value: any): Promise<boolean> {
+  public static async is_true(context: JWContext, value: any): Promise<boolean> {
     JWChecker.isBoolean(value, 1);
     return value === true;
   }
@@ -19,7 +20,7 @@ export class JWBooleanCondition {
    * @param value value to check
    * @return true if value is false, false otherwise
    */
-  public static async is_false(value: any): Promise<boolean> {
+  public static async is_false(context: JWContext, value: any): Promise<boolean> {
     JWChecker.isBoolean(value, 1);
     return value === false;
   }

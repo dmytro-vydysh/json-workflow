@@ -40,12 +40,13 @@ export const __STRING_SUBSTRING__ = 'string.substring';
 export const __STRING_REPLACE_ONE__ = 'string.replace_one';
 export const __STRING_REPLACE_ALL__ = 'string.replace_all';
 export const __STRING_REPLACE_REGEX__ = 'string.replace_regex';
-export const __STRING_LENGTH__ = 'string.length';
+export const __STRING_GET_LENGTH__ = 'string.length';
 export const __STRING_SPLIT__ = 'string.split';
 
 /** Array transformer operation identifiers. */
 export const __ARRAY_APPEND__ = 'array.append';
 export const __ARRAY_JOIN_ARRAYS__ = 'array.join_arrays';
+export const __ARRAY_FLAT__ = 'array.flat';
 export const __ARRAY_PREPEND__ = 'array.prepend';
 export const __ARRAY_INSERT__ = 'array.insert';
 export const __ARRAY_REDUCE__ = 'array.reduce';
@@ -61,7 +62,22 @@ export const __DATE_TOLOCALESTRING__ = 'date.toLocaleString';
 export const __DATE_TOISOSTRING__ = 'date.toISOString';
 export const __DATE_GET_TIME__ = 'date.get_time';
 export const __DATE_DIFF_FROM_NOW__ = 'date.diff_from_now';
-export const __DATE_DIFF_FROM_NOW_IN_STRING__ = 'date.diff_from_now_in_string';
+
+
+/**
+ * All available date format tokens that can be used in the date.format transformer.
+ * YYYY - full year
+ * year_short - last two digits of the year
+ * MM - month number, zero-padded
+ * month_name - full month name
+ * month_name_short - short month name
+ * DD - day of the month, zero-padded
+ * day_name - full day name
+ * day_name_short - short day name
+ * HH - hours, zero-padded
+ * mm - minutes, zero-padded
+ * ss - seconds, zero-padded
+ */
 export const __DATE_FORMAT__ = 'date.format';
 export const __DATE_DATE_ONLY__ = 'date.date_only';
 
@@ -150,3 +166,9 @@ export const __UNDEFINED__ = undefined;
 export const __NULL__ = null;
 export const __TRUE__ = true;
 export const __FALSE__ = false;
+export const __SECONDS__ = 'seconds';
+export const __MINUTES__ = 'minutes';
+export const __HOURS__ = 'hours';
+export const __DAYS__ = 'days';
+export const __MONTHS__ = 'months';
+export const __YEARS__ = 'years';

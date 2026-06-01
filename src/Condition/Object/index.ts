@@ -1,4 +1,4 @@
-import { IOperation } from "../..";
+import { TOperationType, JWContext } from "../..";
 import { JWChecker } from "../../utils/check";
 import { JWArrayCondition } from "../Array";
 
@@ -15,7 +15,7 @@ export class JWObjectCondition {
    * @param key - Key to search for.
    * @returns True if the key exists in the object, otherwise false.
    */
-  public static async has_key(object: any, key: string): Promise<boolean> {
+  public static async has_key(context: JWContext, object: any, key: string): Promise<boolean> {
     JWChecker.isObject(object, 1);
     JWChecker.isString(key, 2);
     return key in object;
@@ -28,7 +28,7 @@ export class JWObjectCondition {
    * @param key - Key to search for.
    * @returns True if the key does not exist in the object, otherwise false.
    */
-  public static async not_has_key(object: any, key: string): Promise<boolean> {
+  public static async not_has_key(context: JWContext, object: any, key: string): Promise<boolean> {
     JWChecker.isObject(object, 1);
     JWChecker.isString(key, 2);
     return !(key in object);
@@ -40,7 +40,7 @@ export class JWObjectCondition {
    * @param object - Object to validate.
    * @returns True if the object is empty.
    */
-  public static async is_empty(object: any): Promise<boolean> {
+  public static async is_empty(context: JWContext, object: any): Promise<boolean> {
     JWChecker.isObject(object, 1);
     return Object.keys(object).length === 0;
   }
@@ -51,7 +51,7 @@ export class JWObjectCondition {
    * @param object - Object to validate.
    * @returns True if the object is not empty.
    */
-  public static async is_not_empty(object: any): Promise<boolean> {
+  public static async is_not_empty(context: JWContext, object: any): Promise<boolean> {
     JWChecker.isObject(object, 1);
     return Object.keys(object).length > 0;
   }
@@ -65,9 +65,9 @@ export class JWObjectCondition {
    * @param operation - Operation executed against each value.
    * @returns True if at least one value satisfies the operation condition.
    */
-  public static async has_value(object: any, operation: IOperation): Promise<boolean> {
+  public static async has_value(context: JWContext, object: any, operation: TOperationType,): Promise<boolean> {
     JWChecker.isObject(object, 1);
-    return await JWArrayCondition.some(Object.values(object), operation);
+    return await JWArrayCondition.some(context, Object.values(object), operation);
   }
 
   /**
@@ -77,9 +77,9 @@ export class JWObjectCondition {
    * @param operation - Operation executed against each key.
    * @returns True if at least one key satisfies the operation condition.
    */
-  public static async some_key(object: any, operation: IOperation): Promise<boolean> {
+  public static async some_key(context: JWContext, object: any, operation: TOperationType): Promise<boolean> {
     JWChecker.isObject(object, 1);
-    return await JWArrayCondition.some(Object.keys(object), operation);
+    return await JWArrayCondition.some(context, Object.keys(object), operation);
   }
 
   /**
@@ -89,9 +89,9 @@ export class JWObjectCondition {
    * @param operation - Operation executed against each key.
    * @returns True if every key satisfies the operation condition.
    */
-  public static async every_key(object: any, operation: IOperation): Promise<boolean> {
+  public static async every_key(context: JWContext, object: any, operation: TOperationType): Promise<boolean> {
     JWChecker.isObject(object, 1);
-    return await JWArrayCondition.every(Object.keys(object), operation);
+    return await JWArrayCondition.every(context, Object.keys(object), operation);
   }
 
 
@@ -103,9 +103,9 @@ export class JWObjectCondition {
    * @param operation - Operation executed against each value.
    * @returns True if every value satisfies the operation condition.
    */
-  public static async every_value(object: any, operation: IOperation): Promise<boolean> {
+  public static async every_value(context: JWContext, object: any, operation: TOperationType): Promise<boolean> {
     JWChecker.isObject(object, 1);
-    return await JWArrayCondition.every(Object.values(object), operation);
+    return await JWArrayCondition.every(context, Object.values(object), operation);
   }
 
   /**
@@ -115,9 +115,9 @@ export class JWObjectCondition {
    * @param operation - Operation executed against each value.
    * @returns True if at least one value satisfies the operation condition.
    */
-  public static async some_value(object: any, operation: IOperation): Promise<boolean> {
+  public static async some_value(context: JWContext, object: any, operation: TOperationType): Promise<boolean> {
     JWChecker.isObject(object, 1);
-    return await JWArrayCondition.some(Object.values(object), operation);
+    return await JWArrayCondition.some(context, Object.values(object), operation);
   }
 
 }

@@ -6,7 +6,7 @@ import { JWOperationError } from '../Error';
 import type {
   TValue,
   TArgumentType,
-  IOperation,
+  TOperationType,
   IResolverOperationCondition,
   IResolverOperationTransformer,
   IResolverOperationConditionGroup,
@@ -19,7 +19,7 @@ export class OperationTester {
   /**
    * Throws if the operation tree contains errors.
    */
-  public static validate(operation: IOperation): void {
+  public static validate(operation: TOperationType): void {
 
     const errors = this.getErrors(operation);
 
@@ -30,7 +30,7 @@ export class OperationTester {
   /**
    * Returns all validation errors without throwing.
    */
-  public static getErrors(operation: IOperation): string[] {
+  public static getErrors(operation: TOperationType): string[] {
 
     const errors: string[] = [];
 
@@ -40,7 +40,7 @@ export class OperationTester {
   }
 
   private static testOperation(
-    operation: IOperation,
+    operation: TOperationType,
     errors: string[],
     path: string,
     ignoreValueGetter = false
@@ -377,7 +377,7 @@ export class OperationTester {
 
 
           this.testOperation(
-            argument.callback as IOperation,
+            argument.callback as TOperationType,
             errors,
             `${path}.callback`,
             true

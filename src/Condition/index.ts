@@ -5,6 +5,7 @@ import { JWObjectCondition } from "./Object";
 import { JWDateCondition } from "./Date";
 import { JWBooleanCondition } from "./Boolean";
 import { JWOperationError } from "../Error";
+import { JWContext } from "../Resolver/types";
 
 
 /**
@@ -112,7 +113,7 @@ export class JWCondition {
    * // true
    * ```
    */
-  public static get(type: TJWConditionType): (...args: any[]) => Promise<any> {
+  public static get(type: TJWConditionType): (context: JWContext,...args: any[]) => Promise<any> {
     const condition = JWConditionsMap[type];
     if (!condition)
       throw new JWOperationError(`Condition with type ${type} not found.`);

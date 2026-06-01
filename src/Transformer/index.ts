@@ -1,4 +1,5 @@
 import { JWOperationError } from "../Error";
+import { JWContext } from "../Resolver/types";
 import { JWArrayTransformer } from "./Array";
 import { JWDateTransformer } from "./Date";
 import { JWNumberTransformer } from "./Number";
@@ -44,6 +45,7 @@ export const JWTransformersMap = {
 
   /** Trasformatori array */
   'array.append': JWArrayTransformer.append,
+  'array.flat': JWArrayTransformer.flat,
   'array.join_arrays': JWArrayTransformer.join_arrays,
   'array.prepend': JWArrayTransformer.prepend,
   'array.insert': JWArrayTransformer.insert,
@@ -61,7 +63,6 @@ export const JWTransformersMap = {
   'date.toISOString': JWDateTransformer.toISOString,
   'date.get_time': JWDateTransformer.get_time,
   'date.diff_from_now': JWDateTransformer.diff_from_now,
-  'date.diff_from_now_in_string': JWDateTransformer.diff_from_now_in_string,
   'date.format': JWDateTransformer.format,
   'date.date_only': JWDateTransformer.date_only,
 
@@ -74,60 +75,6 @@ export const JWTransformersMap = {
   'object.join': JWObjectTransformer.join,
 }
 
-export const JWTransformersReturnTypesMap = {
-  'number.add': 'number',
-  'number.substract': 'number',
-  'number.multiply': 'number',
-  'number.divide': 'number',
-  'number.modulo': 'number',
-  'number.power': 'number',
-  'number.negate': 'number',
-  'number.abs': 'number',
-  'number.round': 'number',
-  'number.floor': 'number',
-  'number.ceil': 'number',
-  'number.sqrt': 'number',
-  'number.max': 'number',
-  'number.min': 'number',
-  'number.to_int': 'number',
-  'number.round_to_decimals': 'number',
-  'number.to_string': 'string',
-  'number.avg': 'number',
-
-  'string.concat': 'string',
-  'string.join': 'string',
-  'string.to_upper': 'string',
-  'string.to_lower': 'string',
-  'string.trim': 'string',
-  'string.substring': 'string',
-  'string.replace_one': 'string',
-  'string.replace_all': 'string',
-  'string.replace_regex': 'string',
-  'string.length': 'number',
-  'string.split': 'array',
-
-
-  'array.append': 'array',
-  'array.join_arrays': 'array',
-  'array.prepend': 'array',
-  'array.insert': 'array',
-  'array.reduce': 'array',
-  'array.map': 'array',
-  'array.filter': 'array',
-  'array.at': 'any',
-  'array.get_length': 'number',
-
-
-
-  'date.add': 'date',
-  'date.subtract': 'date',
-  'date.toLocaleString': 'string',
-  'date.toISOString': 'string',
-  'date.get_time': 'number',
-  'date.diff_from_now': 'number',
-  'date.diff_from_now_in_string': 'string',
-  'date.format': 'string'
-}
 export type TJWTransformerType = keyof typeof JWTransformersMap;
 
 
@@ -137,7 +84,7 @@ export interface ITransformer {
 }
 
 export class JWTransformer {
-  public static get(type: TJWTransformerType): (...args: any[]) => Promise<any> {
+  public static get(type: TJWTransformerType): (context: JWContext, ...args: any[]) => Promise<any> {
     const transformer = JWTransformersMap[type];
     if (!transformer)
       throw new JWOperationError(`Transformer with type ${type} not found.`);
