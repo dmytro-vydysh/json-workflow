@@ -1,48 +1,76 @@
 import { JWCondition } from '../Condition';
 import { JWTransformer } from '../Transformer';
 import { JWOperationError } from '../Error';
-import type {
-  TResolverOperationTypeCondition,
-  TResolverOperationTypeTransformer,
-  TResolverOperationTypeConditionGroup,
-  TResolverOperationTypeConditionGroupOperatorAnd,
-  TResolverOperationTypeConditionGroupOperatorOr,
-  TResolverOperationTypeSwitch,
-  TStatic,
-  TResolver,
-  TOperation,
-  TCallback,
-  TValue,
-  TArgumentType,
-  IResolverOperationCondition,
-  IResolverOperationTransformer,
-  IResolverConditionalOperation,
-  IResolverOperationConditionGroup,
-  IResolverOperationSwitch,
-  TResolverOperationTypeConditional,
-  TOperationType,
-  JWContext,
-  TContext,
-  TOperationTypeList,
-  TResolverOperationTypeGroup,
-} from './types';
+import {
+  type TResolverOperationTypeCondition,
+  type TResolverOperationTypeTransformer,
+  type TResolverOperationTypeConditionGroupOperatorAnd,
+  type TResolverOperationTypeConditionGroupOperatorOr,
+  type TResolverOperationTypeSwitch,
+  type TStatic,
+  type TResolver,
+  type TOperation,
+  type TCallback,
+  type TValue,
+  type TArgumentType,
+  type IResolverOperationCondition,
+  type IResolverOperationTransformer,
+  type IResolverConditionalOperation,
+  type IResolverOperationConditionAnd,
+  type IResolverOperationConditionOr,
+  type IResolverOperationSwitch,
+  type TResolverOperationTypeConditional,
+  type TOperationType,
+  type JWContext,
+  type TContext,
+  type TOperationTypeList,
+  type TAnd,
+  type TArgs,
+  type TCase,
+  type TCondition,
+  type TConditional,
+  type TDefault,
+  type TElse,
+  type TIf,
+  type TOr,
+  type TPipeline,
+  type TSwitch,
+  type TThen,
+  type TTransformer,
+  type TJWRootContext,
+  __STATIC__,
+  __RESOLVER__,
+  __OPERATION__,
+  __CALLBACK__,
+  __CONTEXT__,
+  __ARGS__,
+  __CONDITION__,
+  __TRANSFORMER__,
+  __CONDITIONAL__,
+  __IF__,
+  __THEN__,
+  __ELSE__,
+  __AND__,
+  __OR__,
+  __CASE__,
+  __SWITCH__,
+  __DEFAULT__,
+  __PIPELINE__,
+  __JWROOT__,
+  Operations,
+  type TOperationTypeKey,
+  Values,
+  type TValueTypeKey,
+  ArgumentTypes,
+  type TArgumentTypeKey,
+  IResolverOperationSwitchCase
+} from './assets';
 
 
-export const __STATIC__: TStatic = 'static';
-export const __RESOLVER__: TResolver = 'resolver';
-export const __OPERATION__: TOperation = 'operation';
-export const __CALLBACK__: TCallback = 'callback';
-export const __TRANSFORMER__: TResolverOperationTypeTransformer = 'transformer';
-export const __OPERATOR__ = 'operator';
-export const __AND__: TResolverOperationTypeConditionGroupOperatorAnd = 'AND';
-export const __OR__: TResolverOperationTypeConditionGroupOperatorOr = 'OR';
-export const __SWITCH__: TResolverOperationTypeSwitch = 'switch';
-export const __CONDITION_GROUP__: TResolverOperationTypeConditionGroup = 'condition_group';
-export const __CONDITION__: TResolverOperationTypeCondition = 'condition';
-export const __CONDITIONAL__: TResolverOperationTypeConditional = 'conditional';
-export const __CONTEXT__: TContext = 'context';
-export const __JWROOT__ = '$jwcontext';
-export const __GROUP__: TResolverOperationTypeGroup = 'group';
+
+
+
+
 
 
 /** Entry point for resolving JSON-defined condition and transformer trees. */
@@ -98,12 +126,12 @@ export class JWResolver {
   /**
    * 
    * @param operation operation to launch
-   * @param forcedValueGetter force a start value if you need (used by array.map/array.filter to set the item of array as the valueGetter.type = static, valueGetter.value = item)
+   * @param forcedvalue force a start value if you need (used by array.map/array.filter to set the item of array as the value.type = static, value.value = item)
    * @param forcedArgs force args if you need (used by array.reduce to set the accumulated value as an argument for the next operation)
    * @returns 
    */
-  public static async run<T extends any>(operation: TOperationType, forcedValueGetter?: TValue, forcedArgs?: TArgumentType[]): Promise<T> {
-    return await JWResolver.resolve(new Map<string, any>(), operation, forcedValueGetter, forcedArgs);
+  public static async run<T extends any>(operation: TOperationType, forcedvalue?: TValue, forcedArgs?: TArgumentType[]): Promise<T> {
+    return await JWResolver.resolve(new Map<string, any>(), operation, forcedvalue, forcedArgs);
   }
 
   /**
@@ -112,13 +140,50 @@ export class JWResolver {
    * @returns the context (resulting from running the operation list)
    * @description it runs all operations in sequence, and returns the final context. This is useful when you want to run multiple operations and then inspect the context for the results, instead of relying on the return value of a single operation.
    */
-  public static async runSequence(operationList: TOperationTypeList, context?: JWContext): Promise<JWContext> {
+  public static async runSequence(operationList: TOperationTypeList, context?: JWContext): Promise<Record<string, any>> {
     if (!context)
       context = new Map<string, any>();
+
     for (const operation of operationList)
       await JWResolver.resolve(context, operation);
 
-    return context;
+    return Object.fromEntries(context);
+  }
+
+  private static overwriteValue(operation: TOperationType, value: TValue): void {
+    if (__TRANSFORMER__ in operation)
+      operation[__TRANSFORMER__].value = value;
+
+    if (__CONDITION__ in operation)
+      operation[__CONDITION__].value = value;
+
+    if (__AND__ in operation)
+      operation[__AND__].operations.forEach(op => JWResolver.overwriteValue(op, value));
+
+    if (__OR__ in operation)
+      operation[__OR__].operations.forEach(op => JWResolver.overwriteValue(op, value));
+
+    if (__SWITCH__ in operation)
+      operation[__SWITCH__].value = value;
+
+    if (__CONDITIONAL__ in operation)
+      JWResolver.overwriteValue(operation[__CONDITIONAL__].$if, value)
+  }
+
+  private static overwriteArgs(operation: TOperationType, args: TArgumentType[]): void {
+    if (__TRANSFORMER__ in operation)
+      operation[__TRANSFORMER__].arguments = args;
+
+    if (__CONDITION__ in operation)
+      operation[__CONDITION__].arguments = args;
+
+    if (__AND__ in operation)
+      operation[__AND__].operations.forEach(op => JWResolver.overwriteArgs(op, args));
+
+    if (__OR__ in operation)
+      operation[__OR__].operations.forEach(op => JWResolver.overwriteArgs(op, args));
+
+
   }
 
 
@@ -127,84 +192,54 @@ export class JWResolver {
    *
    * @param context the context to resolve the operation against. Can be undefined when launching a top-level operation, in which case an empty context will be used. For nested operations, the context from the parent operation will be passed down, allowing for state sharing across the operation tree.
    * @param operation operation to launch
-   * @param forcedValueGetter force a start value if you need (used by array.map/array.filter to set the item of array as the valueGetter.type = static, valueGetter.value = item)
+   * @param forcedvalue force a start value if you need (used by array.map/array.filter to set the item of array as the value.type = static, value.value = item)
    * @param forcedArgs force args if you need (used by array.reduce to set the accumulated value as an argument for the next operation)
    * @returns 
    */
-  public static async resolve<T extends any>(context: JWContext | undefined, operation: TOperationType, forcedValueGetter?: TValue, forcedArgs?: TArgumentType[]): Promise<T> {
+  public static async resolve<T extends any>(context: JWContext | undefined, operation: TOperationType, forcedvalue?: TValue, forcedArgs?: TArgumentType[]): Promise<T> {
     if (typeof context === 'undefined')
       context = new Map<string, any>();
 
-    if (!('type' in operation)) {
-      console.error(operation);
-      throw new JWOperationError(`Operation must have a "type" property`);
-    }
+    if (Object.keys(operation).length !== 1)
+      throw new JWOperationError(`Operation must have exactly one key indicating its type. Found keys: ${Object.keys(operation).join(', ')}`);
 
-    if (forcedValueGetter)
-      if (operation.type === __CONDITION__ || operation.type === __TRANSFORMER__)
-        operation.valueGetter = forcedValueGetter;
-      else console.error('No valueGetter forced, and operation has no valueGetter:', operation);
+    const operationTypeKey = Object.keys(operation)[0] as keyof typeof operation;
+
+    if (!(Operations.includes(operationTypeKey)))
+      throw new JWOperationError(`Invalid operation "${operationTypeKey}". Operation must be one of: ${Operations.join(', ')}`);
+
+    if (forcedvalue)
+      JWResolver.overwriteValue(operation, forcedvalue);
 
     if (forcedArgs)
-      if (operation.type === __CONDITION__ || operation.type === __TRANSFORMER__)
-        operation.arguments = forcedArgs;
+      JWResolver.overwriteArgs(operation, forcedArgs);
 
+    return await JWResolver.resolveOperationType(context, operation);
+  }
 
+  private static async resolveOperationType<T extends any>(context: JWContext, operation: TOperationType): Promise<T> {
+    if (__CONDITION__ in operation)
+      return await OperationConditionResolver.resolve<T>(context, operation.$condition);
 
-    switch (operation.type) {
+    if (__TRANSFORMER__ in operation)
+      return await OperationTransformerResolver.resolve<T>(context, operation.$transformer);
 
-      case __GROUP__: {
-        let lastResult: any = undefined;
-        for (const op of operation.operations)
-          lastResult = await JWResolver.resolve(context, op);
-        return lastResult as T;
-      }
+    if (__AND__ in operation)
+      return await OperationConditionANDResolver.resolve<T>(context, operation.$and);
 
+    if (__OR__ in operation)
+      return await OperationConditionORResolver.resolve<T>(context, operation.$or);
 
-      case __CONDITION__: {
-        const result = await OperationConditionResolver.resolve<T>(context, operation);
-        const expectedResult = operation.expectedResult ?? true;
-        const finalResult = (result === expectedResult) as unknown as T;
-        if (operation.save && typeof operation.save === 'string')
-          context.set(operation.save, finalResult);
-        return finalResult;
-      }
+    if (__SWITCH__ in operation)
+      return await OperationSwitchResolver.resolve<T>(context, operation.$switch);
 
+    if (__CONDITIONAL__ in operation)
+      return await OperationConditionalResolver.resolve<T>(context, operation.$conditional);
 
-      case __TRANSFORMER__: {
-        const result = await OperationTransformerResolver.resolve<T>(context, operation);
-        if (operation.save && typeof operation.save === 'string')
-          context.set(operation.save, result);
-        return result;
-      }
+    if (__PIPELINE__ in operation)
+      return await JWResolver.runSequence(operation.$pipeline, context) as unknown as T;
 
-      case __CONDITION_GROUP__: {
-        const result = await OperationConditionGroupResolver.resolve<T>(context, operation);
-        if (operation.save && typeof operation.save === 'string')
-          context.set(operation.save, result);
-        return result;
-      }
-
-
-      case __SWITCH__: {
-        const result = await OperationSwitchResolver.resolve<T>(context, operation);
-        if (operation.save && typeof operation.save === 'string')
-          context.set(operation.save, result);
-        return result;
-      }
-
-
-
-      case __CONDITIONAL__: {
-        const result = await OperationConditionalResolver.resolve<T>(context, operation);
-        if (operation.save && typeof operation.save === 'string')
-          context.set(operation.save, result);
-        return result;
-      }
-
-
-      default: throw new JWOperationError(`Invalid operation type "${(operation as any).type}"`);
-    }
+    throw new JWOperationError(`Invalid operation type "${(operation as any).type}".`);
   }
 }
 
@@ -213,67 +248,69 @@ export class OperationValueResolver {
 
 
   /** Resolves a value descriptor into the runtime value it represents. */
-  public static async resolveValue(context: JWContext, valueGetter: TValue): Promise<any> {
+  public static async resolveValue(context: JWContext, value: TValue): Promise<any> {
 
-    switch (valueGetter.type) {
+    if (Object.keys(value).length !== 1)
+      throw new JWOperationError(`Value descriptor must have exactly one key indicating its type. Found keys: ${Object.keys(value).join(', ')}`);
 
-      case __STATIC__:
-        return valueGetter.value;
-
-      case __RESOLVER__: {
-
-        const resolver = JWResolver.getResolver(valueGetter.resolver);
-
-        if (!resolver) throw new JWOperationError(`Custom resolver "${valueGetter.resolver}" not found.`);
-
-        const args = valueGetter.resolverArgs ? await OperationValueResolver.resolveArguments(context, valueGetter.resolverArgs) : [];
-
-        return await resolver(...args);
-      }
+    if (!(Values.includes(Object.keys(value)[0] as keyof typeof value)))
+      throw new JWOperationError(`Invalid value type "${Object.keys(value)[0]}". Value must be one of: ${Values.join(', ')}`);
 
 
-      case __OPERATION__:
-        return await JWResolver.resolve(context, valueGetter.operation);
+    if (__STATIC__ in value)
+      return value.$static;
 
-      case __CONTEXT__:
-        return JWResolver.readContextValue(context, valueGetter.key);
+    if (__RESOLVER__ in value) {
+
+      const resolver = JWResolver.getResolver(value.$resolver);
+      if (!resolver) throw new JWOperationError(`Custom resolver "${value.$resolver}" not found.`);
+
+      const args = value.$args ? await OperationValueResolver.resolveArguments(context, value.$args) : [];
+
+      return await resolver(...args);
     }
+
+    if (__OPERATION__ in value)
+      return await JWResolver.resolve(context, value.$operation);
+
+    if (__CONTEXT__ in value)
+      return JWResolver.readContextValue(context, value.$context);
+
+    throw new JWOperationError(`Invalid value "${JSON.stringify(value)}".`);
+
   }
 
   /** Resolves a single argument descriptor into a runtime argument. */
   public static async resolveArgument(context: JWContext, argument: TArgumentType): Promise<any> {
 
-    switch (argument.type) {
-      case __CALLBACK__:
-        return argument.callback as TOperationType;
+    if (Object.keys(argument).length !== 1)
+      throw new JWOperationError(`Argument descriptor must have exactly one key indicating its type. Found keys: ${Object.keys(argument).join(', ')}`);
 
+    if (!(ArgumentTypes.includes(Object.keys(argument)[0] as keyof typeof argument)))
+      throw new JWOperationError(`Invalid argument type "${Object.keys(argument)[0]}". Argument must be one of: ${ArgumentTypes.join(', ')}`);
 
-      case __OPERATION__:
-        return await JWResolver.resolve(context, argument.operation);
+    if (__CALLBACK__ in argument)
+      return argument.$callback;
 
+    if (__OPERATION__ in argument)
+      return await JWResolver.resolve(context, argument.$operation);
 
-      case __RESOLVER__: {
+    if (__RESOLVER__ in argument) {
+      const resolver = JWResolver.getResolver(argument.$resolver);
 
-        const resolver = JWResolver.getResolver(argument.resolver);
+      if (!resolver) throw new JWOperationError(`Custom resolver "${argument.$resolver}" not found.`);
+      const args = argument.$args ? await OperationValueResolver.resolveArguments(context, argument.$args) : [];
 
-        if (!resolver) throw new JWOperationError(`Custom resolver "${argument.resolver}" not found.`);
-
-        const args = await OperationValueResolver.resolveArguments(context, argument.resolverArgs || []);
-
-        return await resolver(...args);
-      }
-
-
-      case __STATIC__:
-        return argument.value;
-
-
-      case __CONTEXT__:
-        return JWResolver.readContextValue(context, argument.key);
-
-      default:
-        throw new JWOperationError(`Invalid argument type "${(argument as any).type}"`);
+      return await resolver(...args);
     }
+
+    if (__STATIC__ in argument)
+      return argument.$static;
+
+    if (__CONTEXT__ in argument)
+      return JWResolver.readContextValue(context, argument.$context);
+
+    throw new JWOperationError(`Invalid argument "${JSON.stringify(argument)}".`);
   }
 
   /** Resolves all argument descriptors in parallel. */
@@ -285,104 +322,178 @@ export class OperationValueResolver {
 /** Executes a single condition operation. */
 export class OperationConditionResolver {
 
-  public static async resolve<T extends any>(context: JWContext, operation: IResolverOperationCondition): Promise<T> {
+  /** Executes a single condition operation, saves it (optional) and returns the result */
+  public static async resolve<T extends any>(context: JWContext, condition: IResolverOperationCondition['$condition']): Promise<T> {
 
+    const conditionFN = JWCondition.get(condition.name);
 
+    const value = await OperationValueResolver.resolveValue(context, condition.value);
 
-    const conditionFN = JWCondition.get(operation.condition);
+    const args = condition.arguments ? await OperationValueResolver.resolveArguments(context, condition.arguments) : [];
 
-    const value = await OperationValueResolver.resolveValue(context, operation.valueGetter);
+    const conditionResult = await conditionFN(context, value, ...args) as unknown as T;
 
-    const args = operation.arguments ? await OperationValueResolver.resolveArguments(context, operation.arguments) : [];
+    const expectedResult = condition.expectedResult ?? true;
 
-    return await conditionFN(context, value, ...args) as unknown as T;
+    const conditionMet = conditionResult === expectedResult;
+
+    if (condition.save && typeof condition.save === 'string')
+      context.set(condition.save, conditionMet);
+
+    return conditionMet as unknown as T;
   }
 }
 
-/** Executes a single transformer operation. */
+/** Executes a single transformer operation, saves it (optional) and returns the result */
 export class OperationTransformerResolver {
 
-  public static async resolve<T extends any>(context: JWContext, operation: IResolverOperationTransformer): Promise<T> {
+  /** Executes a transformation function, saves it (optional) and returns the result */
+  public static async resolve<T extends any>(context: JWContext, transformer: IResolverOperationTransformer['$transformer']): Promise<T> {
 
-    const transformerFN = JWTransformer.get(operation.transformer);
+    const transformerFN = JWTransformer.get(transformer.name);
 
-    const value = await OperationValueResolver.resolveValue(context, operation.valueGetter);
+    const value = await OperationValueResolver.resolveValue(context, transformer.value);
 
-    const args = operation.arguments ? await OperationValueResolver.resolveArguments(context, operation.arguments) : [];
+    const args = transformer.arguments ? await OperationValueResolver.resolveArguments(context, transformer.arguments) : [];
 
-    return await transformerFN(context, value, ...args) as unknown as T;
+    const transformationResult = await transformerFN(context, value, ...args) as unknown as T;
+
+    if (transformer.save && typeof transformer.save === 'string')
+      context.set(transformer.save, transformationResult);
+
+    return transformationResult;
   }
 }
 
-/** Evaluates nested condition groups with AND/OR semantics. */
-export class OperationConditionGroupResolver {
+/** Executes a single OR condition operation. */
+export class OperationConditionORResolver {
 
-  public static async resolve<T extends any>(context: JWContext, operation: IResolverOperationConditionGroup): Promise<T> {
+  /** Executes a single OR condition operation, saves it (optional) and returns the result */
+  public static async resolve<T extends any>(context: JWContext, $or: IResolverOperationConditionOr['$or']): Promise<T> {
 
     // Every branch is evaluated against the same resolved value/arguments context.
-    const results = await Promise.all(operation.conditions.map(cond => {
-
-      if (__OPERATOR__ in cond)
-        return OperationConditionGroupResolver.resolve(context, cond);
-
-
-      if (cond.type === __CONDITION__)
-        return OperationConditionResolver.resolve(context, cond);
-
-      else
-        throw new JWOperationError(`Invalid condition group member.`);
+    const results = await Promise.all($or.operations.map(cond => {
+      return JWResolver.resolve<T>(context, cond);
     }));
 
-    if (operation.operator === __AND__)
-      return results.every(res => res === true) as unknown as T;
+    const expectedResult = $or.expectedResult ?? true;
+    const someTrue = results.some(res => res === true);
 
+    const result = (someTrue === expectedResult) as unknown as T;
 
-    if (operation.operator === __OR__) {
+    if ($or.save && typeof $or.save === 'string')
+      context.set($or.save, result);
 
-      let result = false;
-
-      for (const res of results) {
-        if (res === true) {
-          result = true;
-          break;
-        }
-      }
-
-      return (result === (operation.expectedResult ?? true)) as unknown as T;
-    }
-
-    throw new JWOperationError(`Invalid condition group operator "${operation.operator}".`);
+    return result;
   }
 }
+
+/** Executes a single AND condition operation, saves it (optional) and returns the result */
+export class OperationConditionANDResolver {
+  public static async resolve<T extends any>(context: JWContext, $and: IResolverOperationConditionAnd['$and']): Promise<T> {
+
+    // Every branch is evaluated against the same resolved value/arguments context.
+    const results = await Promise.all($and.operations.map(cond => {
+      return JWResolver.resolve<T>(context, cond);
+    }));
+
+    const expectedResult = $and.expectedResult ?? true;
+    const allTrue = results.every(res => res === true);
+
+    const result = (allTrue === expectedResult) as unknown as T;
+
+    if ($and.save && typeof $and.save === 'string')
+      context.set($and.save, result);
+
+    return result;
+  }
+}
+
+
 
 /** Implements switch-like branching over resolved values. */
 export class OperationSwitchResolver {
 
-  public static async resolve<T extends any>(context: JWContext, operation: IResolverOperationSwitch): Promise<T> {
+  private static async checkCase(caseItem: IResolverOperationSwitchCase): Promise<void> {
+    if (Object.keys(caseItem).length !== 1)
+      throw new JWOperationError(`Switch case must have exactly one key indicating its type. Found keys: ${Object.keys(caseItem).join(', ')}`);
 
-    if (!operation.switch)
-      throw new JWOperationError(`Switch operation missing "switch" value.`);
+    if (!caseItem.$case)
+      throw new JWOperationError(`Switch case must have a "$case" key.`);
 
-    if (!operation.cases || !Array.isArray(operation.cases) || operation.cases.length === 0)
-      throw new JWOperationError(`Switch operation missing "cases".`);
+    if (!caseItem.$case.value)
+      throw new JWOperationError(`Switch case must have a "value" key.`);
 
-    const switchValue = await OperationValueResolver.resolveValue(context, operation.switch);
+    if (!caseItem.$case.$operation)
+      throw new JWOperationError(`Switch case must have an "operation" key.`);
+  }
+  private static async resolveCase<T extends any>(context: JWContext, $case: IResolverOperationSwitchCase['$case']): Promise<boolean> {
+
+    const { value: caseValue } = $case;
+
+    const resolvedCaseValue = await OperationValueResolver.resolveValue(context, caseValue);
+
+    return resolvedCaseValue;
+  }
+
+  public static async resolve<T extends any>(context: JWContext, $switch: IResolverOperationSwitch['$switch']): Promise<T> {
+
+    const switchValue = await OperationValueResolver.resolveValue(context, $switch.value);
+
+    $switch.cases.forEach(OperationSwitchResolver.checkCase);
+
+    let case_matched = false;
+    let result: T | undefined = undefined;
 
 
-    for (const caseItem of operation.cases) {
-
-      const { value: caseValue, operation: caseOperation } = caseItem;
-
-      const resolvedCaseValue = await OperationValueResolver.resolveValue(context, caseValue);
-
-      if (resolvedCaseValue === switchValue)
-        return await JWResolver.resolve(context, caseOperation);
+    for (const { $case } of $switch.cases) {
+      if (case_matched)
+        break;
+      const matched = await OperationSwitchResolver.resolveCase<T>(context, $case);
+      if (matched) {
+        case_matched = true;
+        result = await JWResolver.resolve(context, $case.$operation);
+      }
     }
 
-    if (operation.defaultCase)
-      return await JWResolver.resolve(context, operation.defaultCase);
+    if (!case_matched) {
+      if ($switch.$default)
+        result = await JWResolver.resolve(context, $switch.$default);
+      else
+        throw new JWOperationError(`No matching case found for switch value "${switchValue}", and no default case provided.`);
+    }
+    if (typeof result === 'undefined')
+      throw new JWOperationError(`Switch operation did not produce a result.`);
 
-    throw new JWOperationError(`No matching case found for switch value "${switchValue}", and no default case provided.`);
+    if ($switch.save && typeof $switch.save === 'string')
+      context.set($switch.save, result);
+
+    return result as T;
+
+
+    // if (!operation.switch)
+    //   throw new JWOperationError(`Switch operation missing "switch" value.`);
+
+    // if (!operation.cases || !Array.isArray(operation.cases) || operation.cases.length === 0)
+    //   throw new JWOperationError(`Switch operation missing "cases".`);
+
+    // const switchValue = await OperationValueResolver.resolveValue(context, operation.switch);
+
+
+    // for (const caseItem of operation.cases) {
+
+    //   const { value: caseValue, operation: caseOperation } = caseItem;
+
+    //   const resolvedCaseValue = await OperationValueResolver.resolveValue(context, caseValue);
+
+    //   if (resolvedCaseValue === switchValue)
+    //     return await JWResolver.resolve(context, caseOperation);
+    // }
+
+    // if (operation.defaultCase)
+    //   return await JWResolver.resolve(context, operation.defaultCase);
+
+    // throw new JWOperationError(`No matching case found for switch value "${switchValue}", and no default case provided.`);
   }
 }
 
@@ -390,25 +501,31 @@ export class OperationSwitchResolver {
 export class OperationConditionalResolver {
 
 
-  public static async resolve<T extends any>(context: JWContext, operation: IResolverConditionalOperation): Promise<T> {
+  public static async resolve<T extends any>(context: JWContext, $conditional: IResolverConditionalOperation['$conditional']): Promise<T> {
 
-    if (!operation.trueOperation)
-      throw new JWOperationError(`Conditional operation missing "trueOperation".`);
+    if (!(__IF__ in $conditional))
+      throw new JWOperationError(`Conditional operation missing "$if" condition.`);
 
-    if (!operation.falseOperation)
-      throw new JWOperationError(`Conditional operation missing "falseOperation".`);
+    if (!(__THEN__ in $conditional))
+      throw new JWOperationError(`Conditional operation missing "$then" condition.`);
 
-    const conditionResult = await JWResolver.resolve<boolean>(context, operation.condition);
+    if (!(__ELSE__ in $conditional))
+      throw new JWOperationError(`Conditional operation missing "$else" condition.`);
 
-    // Conditions default to expecting true when no explicit expectedResult is supplied.
-    const expectedResult = ('expectedResult' in operation.condition) ? operation.condition.expectedResult ?? true : true;
 
-    const conditionMet = conditionResult === expectedResult;
+    const conditionResult = await JWResolver.resolve<boolean>(context, $conditional.$if);
 
-    if (conditionMet)
-      return await JWResolver.resolve(context, operation.trueOperation);
+    let result: T;
 
-    return await JWResolver.resolve(context, operation.falseOperation);
+    if (conditionResult)
+      result = await JWResolver.resolve<T>(context, $conditional.$then);
+    else
+      result = await JWResolver.resolve<T>(context, $conditional.$else);
+
+    if ($conditional.save && typeof $conditional.save === 'string')
+      context.set($conditional.save, result);
+
+    return result;
 
   }
 }

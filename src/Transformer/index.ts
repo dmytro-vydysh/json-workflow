@@ -1,5 +1,5 @@
 import { JWOperationError } from "../Error";
-import { JWContext } from "../Resolver/types";
+import { JWContext } from "../Resolver/assets";
 import { JWArrayTransformer } from "./Array";
 import { JWDateTransformer } from "./Date";
 import { JWNumberTransformer } from "./Number";

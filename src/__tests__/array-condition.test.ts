@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll } from '@jest/globals';
+import { describe, it, expect } from '@jest/globals';
 import {
   JWResolver,
   TOperationType,
@@ -21,36 +21,22 @@ import {
 describe('array.includes', () => {
   it('should return true if the array includes the value', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_INCLUDES__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
-      },
-      arguments: [
-        {
-          type: __STATIC__,
-          value: 2
-        }
-      ]
+      $condition: {
+        name: __ARRAY_INCLUDES__,
+        value: { $static: [1, 2, 3] },
+        arguments: [{ $static: 2 }]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(true);
   });
 
   it('should return false if the array does not include the value', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_INCLUDES__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
-      },
-      arguments: [
-        {
-          type: __STATIC__,
-          value: 4
-        }
-      ]
+      $condition: {
+        name: __ARRAY_INCLUDES__,
+        value: { $static: [1, 2, 3] },
+        arguments: [{ $static: 4 }]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(false);
   });
@@ -59,37 +45,24 @@ describe('array.includes', () => {
 describe('array.not_includes', () => {
   it('should return true if the array does not include the value', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_NOT_INCLUDES__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
-      },
-      arguments: [
-        {
-          type: __STATIC__,
-          value: 4
-        }
-      ]
+      $condition: {
+        name: __ARRAY_NOT_INCLUDES__,
+        value: { $static: [1, 2, 3] },
+        arguments: [{ $static: 4 }]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(true);
   });
 
   it('should return false if the array includes the value', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_NOT_INCLUDES__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
-      },
-      arguments: [
-        {
-          type: __STATIC__,
-          value: 2
-        }
-      ]
+      $condition: {
+        name: __ARRAY_NOT_INCLUDES__,
+        value: { $static: [1, 2, 3] },
+        arguments: [{ $static: 2 }]
+      }
     }
+
     expect(await JWResolver.run(condition)).toBe(false);
   });
 });
@@ -97,42 +70,38 @@ describe('array.not_includes', () => {
 describe('array.every', () => {
   it('should return true if every element in the array satisfies the condition', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_EVERY__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [2, 4, 6]
-      },
-      arguments: [
-        {
-          type: __CALLBACK__,
-          callback: {
-            type: __CONDITION__,
-            condition: __NUMBER_IS_EVEN__,
+      $condition: {
+        name: __ARRAY_EVERY__,
+        value: { $static: [2, 4, 6] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_IS_EVEN__,
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(true);
   });
 
   it('should return false if at least one element in the array does not satisfy the condition', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_EVERY__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [2, 3, 6]
-      },
-      arguments: [
-        {
-          type: __CALLBACK__,
-          callback: {
-            type: __CONDITION__,
-            condition: __NUMBER_IS_EVEN__,
+      $condition: {
+        name: __ARRAY_EVERY__,
+        value: { $static: [2, 3, 6] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_IS_EVEN__,
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(false);
   });
@@ -141,42 +110,38 @@ describe('array.every', () => {
 describe('array.some', () => {
   it('should return true if at least one element in the array satisfies the condition', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_SOME__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
-      },
-      arguments: [
-        {
-          type: __CALLBACK__,
-          callback: {
-            type: __CONDITION__,
-            condition: __NUMBER_IS_EVEN__,
+      $condition: {
+        name: __ARRAY_SOME__,
+        value: { $static: [1, 2, 3] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_IS_EVEN__,
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(true);
   });
 
   it('should return false if no element in the array satisfies the condition', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_SOME__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 3, 5]
-      },
-      arguments: [
-        {
-          type: __CALLBACK__,
-          callback: {
-            type: __CONDITION__,
-            condition: __NUMBER_IS_EVEN__,
+      $condition: {
+        name: __ARRAY_SOME__,
+        value: { $static: [1, 3, 5] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_IS_EVEN__,
+              }
+            }
           }
-        }
-      ]
+        ]
+      }
     }
     expect(await JWResolver.run(condition)).toBe(false);
   });
@@ -185,11 +150,9 @@ describe('array.some', () => {
 describe('array.is_empty', () => {
   it('should return true if the array is empty', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_IS_EMPTY__,
-      valueGetter: {
-        type: __STATIC__,
-        value: []
+      $condition: {
+        name: __ARRAY_IS_EMPTY__,
+        value: { $static: [] }
       }
     }
     expect(await JWResolver.run(condition)).toBe(true);
@@ -197,11 +160,9 @@ describe('array.is_empty', () => {
 
   it('should return false if the array is not empty', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_IS_EMPTY__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
+      $condition: {
+        name: __ARRAY_IS_EMPTY__,
+        value: { $static: [1, 2, 3] }
       }
     }
     expect(await JWResolver.run(condition)).toBe(false);
@@ -211,11 +172,9 @@ describe('array.is_empty', () => {
 describe('array.is_not_empty', () => {
   it('should return true if the array is not empty', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_IS_NOT_EMPTY__,
-      valueGetter: {
-        type: __STATIC__,
-        value: [1, 2, 3]
+      $condition: {
+        name: __ARRAY_IS_NOT_EMPTY__,
+        value: { $static: [1, 2, 3] }
       }
     }
     expect(await JWResolver.run(condition)).toBe(true);
@@ -223,11 +182,9 @@ describe('array.is_not_empty', () => {
 
   it('should return false if the array is empty', async () => {
     const condition: TOperationType = {
-      type: __CONDITION__,
-      condition: __ARRAY_IS_NOT_EMPTY__,
-      valueGetter: {
-        type: __STATIC__,
-        value: []
+      $condition: {
+        name: __ARRAY_IS_NOT_EMPTY__,
+        value: { $static: [] }
       }
     }
     expect(await JWResolver.run(condition)).toBe(false);

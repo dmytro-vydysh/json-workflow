@@ -1,5 +1,5 @@
 import { JWOperationError } from "../../Error";
-import { TOperationType, JWContext } from "../../Resolver/types";
+import { TOperationType, JWContext } from "../../Resolver/assets";
 import { JWResolver } from "../../Resolver";
 import { JWChecker } from "../../utils/check";
 
@@ -44,7 +44,7 @@ export class JWArrayCondition {
   public static async every(context: JWContext, array: Array<any>, operation: TOperationType,): Promise<boolean> {
     JWChecker.isArray(array, 1);
 
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, { ...operation }, { type: 'static', value: item })));
+    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, { ...operation }, { $static: item })));
 
     return results.every(result => result === true);
 
@@ -57,7 +57,7 @@ export class JWArrayCondition {
    */
   public static async some(context: JWContext, array: Array<any>, operation: TOperationType): Promise<boolean> {
     JWChecker.isArray(array, 1);
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, { ...operation }, { type: 'static', value: item })));
+    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, { ...operation }, { $static: item })));
 
     return results.some(result => result === true);
   }

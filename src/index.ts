@@ -5,8 +5,7 @@
  * definitions that are later executed by the resolver.
  */
 export * from "./Resolver";
-export * from "./Resolver/types";
-export * from "./Resolver/tester";
+export * from "./Resolver/assets";
 
 
 /** Numeric transformer operation identifiers. */

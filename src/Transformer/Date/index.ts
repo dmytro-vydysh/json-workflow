@@ -1,5 +1,5 @@
 import { JWOperationError } from "../../Error";
-import { TOperationType, JWContext } from "../../Resolver/types";
+import { TOperationType, JWContext } from "../../Resolver/assets";
 import { JWResolver } from "../../Resolver";
 import { JWChecker } from "../../utils/check";
 import { JWGetter } from "../../utils/getter";
@@ -30,13 +30,15 @@ export class JWDateTransformer {
     if (['seconds', 'minutes', 'hours', 'days', 'months', 'years'].indexOf(unit) === -1)
       throw new JWOperationError(`Invalid unit for date.add transformer: ${unit}`);
 
+    date = JWGetter.getDate(date);
+
     let ammountValue: number;
     if (typeof amount === 'number')
       ammountValue = amount;
     else if (amount instanceof Date)
       ammountValue = amount.getTime();
     else {
-      const operationResult = await JWResolver.resolve(context, amount, { type: 'static', value: date });
+      const operationResult = await JWResolver.resolve(context, amount, { $static: date });
       if (typeof operationResult !== 'number')
         throw new JWOperationError(`Operation for date.add transformer must return a number, got ${typeof operationResult}`);
       ammountValue = operationResult;
@@ -71,10 +73,14 @@ export class JWDateTransformer {
     if (['seconds', 'minutes', 'hours', 'days', 'months', 'years'].indexOf(unit) === -1)
       throw new JWOperationError(`Invalid unit for date.subtract transformer: ${unit}`);
 
+
+    date = JWGetter.getDate(date);
+
     let ammountValue: number;
-    if (typeof amount === 'number') ammountValue = amount;
+    if (typeof amount === 'number')
+      ammountValue = amount;
     else {
-      const operationResult = await JWResolver.resolve(context, amount, { type: 'static', value: date });
+      const operationResult = await JWResolver.resolve(context, amount, { $static: date });
       if (typeof operationResult !== 'number')
         throw new JWOperationError(`Operation for date.subtract transformer must return a number, got ${typeof operationResult}`);
       ammountValue = operationResult;

@@ -1,4 +1,4 @@
-import { JWContext } from "../../Resolver/types";
+import { JWContext } from "../../Resolver/assets";
 import { JWChecker } from "../../utils/check";
 
 /** Numeric transformation helpers used by resolver transformer operations. */

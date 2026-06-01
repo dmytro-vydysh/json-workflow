@@ -1,6 +1,6 @@
 import { JWOperationError } from "../../Error";
 import { JWResolver, OperationValueResolver } from "../../Resolver";
-import { TOperationType, JWContext, TValue } from "../../Resolver/types";
+import { TOperationType, JWContext, TValue } from "../../Resolver/assets";
 import { JWChecker } from "../../utils/check";
 
 
@@ -90,7 +90,7 @@ export class JWArrayTransformer {
     return await array.reduce(
       async (accPromise, item) => {
         const acc = await accPromise;
-        return await JWResolver.resolve(context, operation, { type: 'static', value: item }, [{ type: 'static', value: acc }]);
+        return await JWResolver.resolve(context, operation, { $static: item }, [{ $static: acc }]);
       },
       initialValue
     );
@@ -105,7 +105,7 @@ export class JWArrayTransformer {
   public static async map(context: JWContext, array: any[], operation: TOperationType): Promise<Array<any>> {
     JWChecker.isArray(array, 1);
 
-    return await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { type: 'static', value: item })));
+    return await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
   }
 
   /**
@@ -120,7 +120,7 @@ export class JWArrayTransformer {
   public static async filter(context: JWContext, array: any[], operation: TOperationType): Promise<Array<any>> {
     JWChecker.isArray(array, 1);
 
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { type: 'static', value: item })));
+    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
     return array.filter((_, index) => results[index] === true);
   }
 
@@ -158,7 +158,7 @@ export class JWArrayTransformer {
    */
   public static async find_index(context: JWContext, array: any[], operation: TOperationType): Promise<number> {
     JWChecker.isArray(array, 1);
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { type: 'static', value: item })));
+    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
     return results.findIndex(result => result === true);
   }
 
@@ -173,7 +173,7 @@ export class JWArrayTransformer {
    */
   public static async find(context: JWContext, array: any[], operation: TOperationType): Promise<any> {
     JWChecker.isArray(array, 1);
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { type: 'static', value: item })));
+    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
     const index = results.findIndex(result => result === true);
     return index !== -1 ? array[index] : undefined;
   }

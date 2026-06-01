@@ -5,7 +5,7 @@ import { JWObjectCondition } from "./Object";
 import { JWDateCondition } from "./Date";
 import { JWBooleanCondition } from "./Boolean";
 import { JWOperationError } from "../Error";
-import { JWContext } from "../Resolver/types";
+import { JWContext } from "../Resolver/assets";
 
 
 /**
