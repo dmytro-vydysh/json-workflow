@@ -72,7 +72,7 @@ export interface IResolverOperationCondition {
   };
 };
 export interface IResolverOperationConditionCallback {
-  $condition: Omit<IResolverOperationCondition, 'value'>
+  $condition: Omit<IResolverOperationCondition['$condition'], 'value'>
 }
 
 /** Executes a named transformer against a resolved value and optional arguments. */
@@ -85,7 +85,7 @@ export interface IResolverOperationTransformer {
   };
 }
 export interface IResolverOperationTransformerCallback {
-  $transformer: Omit<IResolverOperationTransformer, 'value'>
+  $transformer: Omit<IResolverOperationTransformer['$transformer'], 'value'>
 }
 
 

@@ -409,8 +409,6 @@ export class OperationConditionANDResolver {
   }
 }
 
-
-
 /** Implements switch-like branching over resolved values. */
 export class OperationSwitchResolver {
 
