@@ -12,3 +12,5 @@ local.js
 !.env.example
 .vscode
 oldtests
+coverage
+.github/workflows/**/*.yml
