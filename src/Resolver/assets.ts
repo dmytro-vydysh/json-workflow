@@ -60,35 +60,77 @@ export type TArgumentTypeCallback = {
 };
 
 
+export interface IResolverOperationConditionCallback {
+  $condition: Omit<IResolverOperationCondition['$condition'], 'value'>;
+}
+
+export interface IResolverOperationTransformerCallback {
+  $transformer: Omit<IResolverOperationTransformer['$transformer'], 'value'>;
+}
+
+
+export interface IResolverOperationConditionAndCallback {
+  $and: {
+    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
+  }
+}
+
+
+export interface IResolverOperationConditionOrCallback {
+  $or: {
+    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
+  }
+}
+
+
+export interface IResolverOperationSwitchCallback {
+  $switch: {
+    cases: Array<IResolverOperationSwitchCaseCallback>;
+    $default?: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+  }
+}
+
+
+
+export interface IResolverConditionalOperationCallback {
+  $conditional: {
+    $if: IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+    $then: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+    $else: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+  }
+}
+
+
+export interface IResolverOperationResolverCallback {
+  $resolver: Omit<IResolverOperationResolver['$resolver'], 'value'>;
+}
+
+
+
 export type TArgumentType = TArgumentTypeStatic | TArgumentTypeResolver | TArgumentTypeOperation | TArgumentTypeContext | TArgumentTypeCallback;
 
 /** Executes a named condition against a resolved value and optional arguments. */
 export interface IResolverOperationCondition {
   $condition: {
     name: TJWConditionType;
+    valueTransformer?: IResolverOperationTransformerCallback;
     value: TValue;
     arguments?: TArgumentType[];
     expectedResult?: boolean;
     save?: string;
   };
 };
-export interface IResolverOperationConditionCallback {
-  $condition: Omit<IResolverOperationCondition['$condition'], 'value'>
-}
 
 /** Executes a named transformer against a resolved value and optional arguments. */
 export interface IResolverOperationTransformer {
   $transformer: {
     name: TJWTransformerType;
     value: TValue;
+    valueTransformer?: IResolverOperationTransformerCallback;
     arguments?: TArgumentType[];
     save?: string;
   };
 }
-export interface IResolverOperationTransformerCallback {
-  $transformer: Omit<IResolverOperationTransformer['$transformer'], 'value'>
-}
-
 
 /** Branches between two operations using another resolver operation as the predicate. */
 export interface IResolverConditionalOperation {
@@ -99,24 +141,12 @@ export interface IResolverConditionalOperation {
     save?: string;
   }
 }
-export interface IResolverConditionalOperationCallback {
-  $conditional: {
-    $if: IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-    $then: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-    $else: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-  }
-}
 
 export interface IResolverOperationConditionAnd {
   $and: {
     operations: Array<IResolverOperationCondition | IResolverOperationConditionAnd | IResolverOperationConditionOr | IResolverOperationSwitch | IResolverConditionalOperation | IResolverOperationResolver>;
     expectedResult?: boolean;
     save?: string;
-  }
-}
-export interface IResolverOperationConditionAndCallback {
-  $and: {
-    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
   }
 }
 
@@ -127,17 +157,13 @@ export interface IResolverOperationConditionOr {
     save?: string;
   }
 }
-export interface IResolverOperationConditionOrCallback {
-  $or: {
-    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
-  }
-}
 
 
 /** Associates a match value with the operation that should run for that value. */
 export interface IResolverOperationSwitchCase {
   $case: {
     value: TValue;
+    valueTransformer?: IResolverOperationTransformerCallback;
     $operation: IResolverOperationCondition | IResolverOperationTransformer | IResolverOperationConditionAnd | IResolverOperationConditionOr | IResolverOperationSwitch | IResolverConditionalOperation | IResolverOperationResolver;
   }
 }
@@ -149,6 +175,7 @@ export interface IResolverOperationSwitchCaseCallback {
 export interface IResolverOperationSwitch {
   $switch: {
     value: TValue;
+    valueTransformer?: IResolverOperationTransformerCallback;
     cases: Array<IResolverOperationSwitchCase>;
     $default?: IResolverOperationCondition | IResolverOperationTransformer | IResolverOperationConditionAnd | IResolverOperationConditionOr | IResolverOperationSwitch | IResolverConditionalOperation | IResolverOperationResolver;
     save?: string;
@@ -159,20 +186,10 @@ export interface IResolverOperationResolver {
   $resolver: {
     name: string;
     value?: TValue;
+    valueTransformer?: IResolverOperationTransformerCallback;
     arguments?: TArgumentType[];
     save?: string;
   }
-}
-export interface IResolverOperationResolverCallback {
-  $resolver: Omit<IResolverOperationResolver['$resolver'], 'value'>;
-}
-
-export interface IResolverOperationSwitchCallback {
-  $switch: {
-    cases: Array<IResolverOperationSwitchCaseCallback>;
-    $default?: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-  }
-
 }
 
 export interface IResolverPipeline {

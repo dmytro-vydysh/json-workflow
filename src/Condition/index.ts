@@ -6,6 +6,7 @@ import { JWDateCondition } from "./Date";
 import { JWBooleanCondition } from "./Boolean";
 import { JWOperationError } from "../Error";
 import { JWContext } from "../Resolver/assets";
+import { JWContextCondition } from "./Context";
 
 
 /**
@@ -73,6 +74,7 @@ export const JWConditionsMap = {
   'date.is_day_of_week': JWDateCondition.is_day_of_week,
   'boolean.is_true': JWBooleanCondition.is_true,
   'boolean.is_false': JWBooleanCondition.is_false,
+  'context.has_key': JWContextCondition.hasKey,
 };
 
 
@@ -83,11 +85,6 @@ export const JWConditionsMap = {
 export type TJWConditionType = keyof typeof JWConditionsMap;
 
 
-export interface ICondition {
-  type: 'condition';
-  path: TJWConditionType;
-  expectedResult?: boolean;
-}
 
 /**
  * Factory class used to retrieve condition implementations

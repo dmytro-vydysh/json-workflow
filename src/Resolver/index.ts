@@ -64,7 +64,9 @@ import {
   ArgumentTypes,
   type TArgumentTypeKey,
   IResolverOperationSwitchCase,
-  IResolverOperationResolver
+  IResolverOperationResolver,
+  TArgumentTypeCallback,
+  IResolverOperationTransformerCallback
 } from './assets';
 
 
@@ -252,7 +254,7 @@ export class OperationValueResolver {
 
 
   /** Resolves a value descriptor into the runtime value it represents. */
-  public static async resolveValue(context: JWContext, value: TValue): Promise<any> {
+  public static async resolveValue(context: JWContext, value: TValue, valueTransformer?: IResolverOperationTransformerCallback): Promise<any> {
 
     if (Object.keys(value).length !== 1)
       throw new JWOperationError(`Value descriptor must have exactly one key indicating its type. Found keys: ${Object.keys(value).join(', ')}`);
@@ -260,27 +262,39 @@ export class OperationValueResolver {
     if (!(Values.includes(Object.keys(value)[0] as keyof typeof value)))
       throw new JWOperationError(`Invalid value type "${Object.keys(value)[0]}". Value must be one of: ${Values.join(', ')}`);
 
+    let resolvedValue: any;
 
     if (__STATIC__ in value)
-      return value.$static;
+      resolvedValue = value.$static;
 
-    if (__RESOLVER__ in value) {
+    else if (__RESOLVER__ in value) {
 
       const resolver = JWResolver.getResolver(value.$resolver);
       if (!resolver) throw new JWOperationError(`Custom resolver "${value.$resolver}" not found.`);
 
       const args = value.$args ? await OperationValueResolver.resolveArguments(context, value.$args) : [];
 
-      return await resolver(...args);
+      resolvedValue = await resolver(...args);
     }
 
-    if (__OPERATION__ in value)
-      return await JWResolver.resolve(context, value.$operation);
+    else if (__OPERATION__ in value)
+      resolvedValue = await JWResolver.resolve(context, value.$operation);
 
-    if (__CONTEXT__ in value)
-      return JWResolver.readContextValue(context, value.$context);
+    else if (__CONTEXT__ in value)
+      resolvedValue = JWResolver.readContextValue(context, value.$context);
+    else
+      throw new JWOperationError(`Invalid value "${JSON.stringify(value)}".`);
 
-    throw new JWOperationError(`Invalid value "${JSON.stringify(value)}".`);
+    if (valueTransformer) {
+
+      const operation = { $transformer: { ...valueTransformer.$transformer, value: { $static: resolvedValue } } } as IResolverOperationTransformer;
+      resolvedValue = await JWResolver.resolve(context, operation);
+    }
+
+
+    return resolvedValue as any;
+
+
 
   }
 
@@ -331,7 +345,7 @@ export class OperationConditionResolver {
 
     const conditionFN = JWCondition.get(condition.name);
 
-    const value = await OperationValueResolver.resolveValue(context, condition.value);
+    const value = await OperationValueResolver.resolveValue(context, condition.value, condition.valueTransformer);
 
     const args = condition.arguments ? await OperationValueResolver.resolveArguments(context, condition.arguments) : [];
 
@@ -356,7 +370,7 @@ export class OperationTransformerResolver {
 
     const transformerFN = JWTransformer.get(transformer.name);
 
-    const value = await OperationValueResolver.resolveValue(context, transformer.value);
+    const value = await OperationValueResolver.resolveValue(context, transformer.value, transformer.valueTransformer);
 
     const args = transformer.arguments ? await OperationValueResolver.resolveArguments(context, transformer.arguments) : [];
 
@@ -433,14 +447,14 @@ export class OperationSwitchResolver {
 
     const { value: caseValue } = $case;
 
-    const resolvedCaseValue = await OperationValueResolver.resolveValue(context, caseValue);
+    const resolvedCaseValue = await OperationValueResolver.resolveValue(context, caseValue, $case.valueTransformer);
 
     return resolvedCaseValue;
   }
 
   public static async resolve<T extends any>(context: JWContext, $switch: IResolverOperationSwitch['$switch']): Promise<T> {
 
-    const switchValue = await OperationValueResolver.resolveValue(context, $switch.value);
+    const switchValue = await OperationValueResolver.resolveValue(context, $switch.value, $switch.valueTransformer);
 
     $switch.cases.forEach(OperationSwitchResolver.checkCase);
 
@@ -473,29 +487,6 @@ export class OperationSwitchResolver {
     return result as T;
 
 
-    // if (!operation.switch)
-    //   throw new JWOperationError(`Switch operation missing "switch" value.`);
-
-    // if (!operation.cases || !Array.isArray(operation.cases) || operation.cases.length === 0)
-    //   throw new JWOperationError(`Switch operation missing "cases".`);
-
-    // const switchValue = await OperationValueResolver.resolveValue(context, operation.switch);
-
-
-    // for (const caseItem of operation.cases) {
-
-    //   const { value: caseValue, operation: caseOperation } = caseItem;
-
-    //   const resolvedCaseValue = await OperationValueResolver.resolveValue(context, caseValue);
-
-    //   if (resolvedCaseValue === switchValue)
-    //     return await JWResolver.resolve(context, caseOperation);
-    // }
-
-    // if (operation.defaultCase)
-    //   return await JWResolver.resolve(context, operation.defaultCase);
-
-    // throw new JWOperationError(`No matching case found for switch value "${switchValue}", and no default case provided.`);
   }
 }
 
@@ -539,7 +530,7 @@ export class OperationResolverResolver {
     const resolver = JWResolver.getResolver($resolver.name);
     if (!resolver) throw new JWOperationError(`Custom resolver "${$resolver.name}" not found.`);
 
-    const value = await OperationValueResolver.resolveValue(context, $resolver.value ?? { $static: undefined });
+    const value = await OperationValueResolver.resolveValue(context, $resolver.value ?? { $static: undefined }, $resolver.valueTransformer);
 
     const args = $resolver.arguments ? await OperationValueResolver.resolveArguments(context, $resolver.arguments) : [];
 

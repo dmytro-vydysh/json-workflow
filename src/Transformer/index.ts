@@ -1,6 +1,7 @@
 import { JWOperationError } from "../Error";
 import { JWContext } from "../Resolver/assets";
 import { JWArrayTransformer } from "./Array";
+import { JWContextTransformer } from "./Context";
 import { JWDateTransformer } from "./Date";
 import { JWNumberTransformer } from "./Number";
 import { JWObjectTransformer } from "./Object";
@@ -73,15 +74,13 @@ export const JWTransformersMap = {
   'object.get_key': JWObjectTransformer.get_key,
   'object.set_key': JWObjectTransformer.set_key,
   'object.join': JWObjectTransformer.join,
+
+
+  'context.set_value': JWContextTransformer.setValue,
+  'context.get_value': JWContextTransformer.getValue,
 }
 
 export type TJWTransformerType = keyof typeof JWTransformersMap;
-
-
-export interface ITransformer {
-  type: 'transformer';
-  path: TJWTransformerType;
-}
 
 export class JWTransformer {
   public static get(type: TJWTransformerType): (context: JWContext, ...args: any[]) => Promise<any> {

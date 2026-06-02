@@ -88,6 +88,10 @@ export const __OBJECT_SET_KEY__ = 'object.set_key';
 export const __OBJECT_JOIN__ = 'object.join';
 
 
+export const __CONTEXT_GET_KEY__ = 'context.get_key';
+export const __CONTEXT_SET_KEY__ = 'context.set_key';
+
+
 /** Numeric condition identifiers. */
 export const __NUMBER_GT__ = 'number.gt';
 export const __NUMBER_LT__ = 'number.lt';
@@ -158,6 +162,9 @@ export const __DATE_IS_DAY_OF_WEEK__ = 'date.is_day_of_week';
 /** Boolean condition identifiers. */
 export const __BOOLEAN_IS_TRUE__ = 'boolean.is_true';
 export const __BOOLEAN_IS_FALSE__ = 'boolean.is_false';
+
+
+export const __CONTEXT_HAS_KEY__ = 'context.has_key';
 
 
 /** Shared static literal helpers for JSON operation payloads. */
