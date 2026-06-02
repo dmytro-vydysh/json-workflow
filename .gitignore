@@ -1,7 +1,6 @@
 .npmrc
 lib
 node_modules
-package-lock.json
 local.js
 .npm
 TODO.txt
