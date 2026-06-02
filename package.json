@@ -1,7 +1,7 @@
 {
   "name": "json-workflow",
   "version": "0.0.1",
-  "description": "transform fields and check conditions using JSON schema",
+  "description": "A library that allows you to perform operations from a JSON schema. Useful for low-code and no-code applications.",
   "homepage": "https://github.com/dmytro-vydysh/json-workflow#readme",
   "bugs": {
     "url": "https://github.com/dmytro-vydysh/json-workflow/issues"
