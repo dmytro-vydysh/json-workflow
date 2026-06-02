@@ -233,10 +233,21 @@ describe('string matches regex', () => {
       $condition: {
         name: __STRING_MATCHES_REGEX__,
         value: { $static: 'hello world' },
-        arguments: [{ $static: '^world' }]
+        arguments: [{ $static: /^world/ }]
       }
     }
     expect(await JWResolver.run(condition)).toBe(false);
+  });
+
+  it('should throw an error if the second argument is not a string or RegExp', async () => {
+    const condition: TOperationType = {
+      $condition: {
+        name: __STRING_MATCHES_REGEX__,
+        value: { $static: 'hello world' },
+        arguments: [{ $static: 123 }]
+      }
+    }
+    await expect(JWResolver.run(condition)).rejects.toBeInstanceOf(Error);
   });
 });
 

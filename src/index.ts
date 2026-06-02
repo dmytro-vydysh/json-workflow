@@ -53,6 +53,8 @@ export const __ARRAY_MAP__ = 'array.map';
 export const __ARRAY_FILTER__ = 'array.filter';
 export const __ARRAY_AT__ = 'array.at';
 export const __ARRAY_GET_LENGTH__ = 'array.get_length';
+export const __ARRAY_FIND_INDEX__ = 'array.find_index';
+export const __ARRAY_FIND__ = 'array.find';
 
 /** Date transformer operation identifiers. */
 export const __DATE_ADD__ = 'date.add';

@@ -188,3 +188,38 @@ describe('resolver semplified 2', () => {
     expect((await JWResolver.run(operation) as Array<any>).every(todo => todo.userId === 10 && todo.completed === true)).toBeTruthy();
   })
 })
+
+
+
+
+describe('resolver semplified 2', () => {
+  it('should return only completed todos of user with id 10', async () => {
+    const operation: TOperationType = {
+      $transformer: {
+        name: __ARRAY_FILTER__,
+        value: {
+          $operation: {
+            $transformer: {
+              name: __OBJECT_GET_KEY__,
+              value: { $resolver: 'fetch_todos' },
+              arguments: [{ $static: 'data' }]
+            }
+          }
+        },
+        arguments: [
+          {
+            $callback: {
+              $or: {
+                operations: [
+                  { $condition: { name: __BOOLEAN_IS_TRUE__, valueTransformer: { $transformer: { name: __OBJECT_GET_KEY__, arguments: [{ $static: 'completed' }] } } } },
+                  { $condition: { name: __NUMBER_EQ__, valueTransformer: { $transformer: { name: __OBJECT_GET_KEY__, arguments: [{ $static: 'userId' }] } }, arguments: [{ $static: 10 }] } }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+    expect((await JWResolver.run(operation) as Array<any>).every(todo => todo.userId === 10 || todo.completed === true)).toBeTruthy();
+  })
+})

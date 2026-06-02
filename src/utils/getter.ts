@@ -13,7 +13,8 @@ export class JWGetter {
     }
     if (typeof value === 'number') {
       const date = new Date(value);
-      if (isNaN(date.getTime())) throw new JWOperationError(`Invalid timestamp: ${value}`);
+      if (isNaN(date.getTime()))
+        throw new JWOperationError(`Invalid timestamp: ${value}`);
       return date;
     }
     if (typeof value === 'string') {

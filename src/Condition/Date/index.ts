@@ -138,7 +138,8 @@ export class JWDateCondition {
    */
   public static async is_day_of_week(context: JWContext, date: Date, dayOfWeek: number): Promise<boolean> {
     JWChecker.isDate(date, 1);
-    if (typeof dayOfWeek !== 'number' || dayOfWeek < 0 || dayOfWeek > 6) throw new JWOperationError(`Argument at position 2 must be a number between 0 (Sunday) and 6 (Saturday), got ${dayOfWeek}`);
+    if (typeof dayOfWeek !== 'number' || dayOfWeek < 0 || dayOfWeek > 6)
+      throw new JWOperationError(`Argument at position 2 must be a number between 0 (Sunday) and 6 (Saturday), got ${dayOfWeek}`);
     return JWGetter.getDate(date).getDay() === dayOfWeek;
   }
 }

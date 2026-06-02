@@ -31,7 +31,9 @@ export class JWChecker {
   public static isDate(value: any, argIndex: number): void {
     const isDateInstance = value instanceof Date;
     const isISOString = typeof value === 'string' && !isNaN(Date.parse(value));
-    const isTimestamp = typeof value === 'number' && !isNaN(new Date(value).getTime());
+    const isTimestamp =
+      typeof value === 'number'
+      && !isNaN(new Date(value).getTime());
     const result = isDateInstance || isISOString || isTimestamp;
     if (!result)
       throw new JWOperationArgumentError(this.formatMessage('date (Date, ISO, timestamp)', value, argIndex));

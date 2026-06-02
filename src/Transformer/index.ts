@@ -55,6 +55,8 @@ export const JWTransformersMap = {
   'array.filter': JWArrayTransformer.filter,
   'array.at': JWArrayTransformer.at,
   'array.get_length': JWArrayTransformer.get_length,
+  'array.find_index': JWArrayTransformer.find_index,
+  'array.find': JWArrayTransformer.find,
 
 
   /** Trasformatori date */

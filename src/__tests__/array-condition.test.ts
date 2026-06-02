@@ -40,6 +40,17 @@ describe('array.includes', () => {
     }
     expect(await JWResolver.run(condition)).toBe(false);
   });
+
+  it('should throw an error because array.includes operates only with primitives and not with objects', async () => {
+    const condition: TOperationType = {
+      $condition: {
+        name: __ARRAY_INCLUDES__,
+        value: { $static: [{ a: 1 }, { b: 2 }, { c: 3 }] },
+        arguments: [{ $static: { b: 2 } }]
+      }
+    }
+    await expect(JWResolver.run(condition)).rejects.toBeInstanceOf(Error);
+  });
 });
 
 describe('array.not_includes', () => {
@@ -64,6 +75,19 @@ describe('array.not_includes', () => {
     }
 
     expect(await JWResolver.run(condition)).toBe(false);
+  });
+
+  
+
+  it('should throw an error because array.not_includes operates only with primitives and not with objects', async () => {
+    const condition: TOperationType = {
+      $condition: {
+        name: __ARRAY_NOT_INCLUDES__,
+        value: { $static: [{ a: 1 }, { b: 2 }, { c: 3 }] },
+        arguments: [{ $static: { b: 2 } }]
+      }
+    }
+    await expect(JWResolver.run(condition)).rejects.toBeInstanceOf(Error);
   });
 });
 

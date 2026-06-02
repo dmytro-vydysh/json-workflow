@@ -24,25 +24,15 @@ export class JWDateTransformer {
    * @throws {Error}
    * Thrown when the unit is invalid or the operation does not return a number.
    */
-  public static async add(context: JWContext, date: Date, amount: number | TOperationType | Date, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Promise<Date> {
+  public static async add(context: JWContext, date: Date, ammountValue: number, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Promise<Date> {
     JWChecker.isDate(date, 1);
+    JWChecker.isNumber(ammountValue, 2);
 
     if (['seconds', 'minutes', 'hours', 'days', 'months', 'years'].indexOf(unit) === -1)
       throw new JWOperationError(`Invalid unit for date.add transformer: ${unit}`);
 
     date = JWGetter.getDate(date);
 
-    let ammountValue: number;
-    if (typeof amount === 'number')
-      ammountValue = amount;
-    else if (amount instanceof Date)
-      ammountValue = amount.getTime();
-    else {
-      const operationResult = await JWResolver.resolve(context, amount, { $static: date });
-      if (typeof operationResult !== 'number')
-        throw new JWOperationError(`Operation for date.add transformer must return a number, got ${typeof operationResult}`);
-      ammountValue = operationResult;
-    }
     const newDate = new Date(date);
     switch (unit) {
       case 'seconds':
@@ -68,23 +58,15 @@ export class JWDateTransformer {
   }
 
   /** Returns a new date by subtracting the given amount in the specified time unit. */
-  public static async subtract(context: JWContext, date: Date, amount: number | TOperationType, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Promise<Date> {
+  public static async subtract(context: JWContext, date: Date, ammountValue: number, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Promise<Date> {
     JWChecker.isDate(date, 1);
+    JWChecker.isNumber(ammountValue, 2);
     if (['seconds', 'minutes', 'hours', 'days', 'months', 'years'].indexOf(unit) === -1)
       throw new JWOperationError(`Invalid unit for date.subtract transformer: ${unit}`);
 
 
     date = JWGetter.getDate(date);
 
-    let ammountValue: number;
-    if (typeof amount === 'number')
-      ammountValue = amount;
-    else {
-      const operationResult = await JWResolver.resolve(context, amount, { $static: date });
-      if (typeof operationResult !== 'number')
-        throw new JWOperationError(`Operation for date.subtract transformer must return a number, got ${typeof operationResult}`);
-      ammountValue = operationResult;
-    }
     const newDate = new Date(date);
     switch (unit) {
       case 'seconds':
@@ -130,26 +112,26 @@ export class JWDateTransformer {
   /** Computes the elapsed time from the given date to now in the selected unit. */
   public static async diff_from_now(context: JWContext, date: Date, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Promise<number> {
     JWChecker.isDate(date, 1);
-    const now = new Date();
+    const now = Date.now();
     let diff: number;
     switch (unit) {
       case 'seconds':
-        diff = (now.getTime() - JWGetter.getDate(date).getTime()) / 1000;
+        diff = (now - JWGetter.getDate(date).getTime()) / 1000;
         break;
       case 'minutes':
-        diff = (now.getTime() - JWGetter.getDate(date).getTime()) / (1000 * 60);
+        diff = (now - JWGetter.getDate(date).getTime()) / (1000 * 60);
         break;
       case 'hours':
-        diff = (now.getTime() - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60);
+        diff = (now - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60);
         break;
       case 'days':
-        diff = (now.getTime() - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60 * 24);
+        diff = (now - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60 * 24);
         break;
       case 'months':
-        diff = (now.getTime() - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60 * 24 * 30);
+        diff = (now - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60 * 24 * 30);
         break;
       case 'years':
-        diff = (now.getTime() - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60 * 24 * 365);
+        diff = (now - JWGetter.getDate(date).getTime()) / (1000 * 60 * 60 * 24 * 365);
         break;
     }
     return Math.abs(Math.trunc(diff));

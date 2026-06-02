@@ -20,8 +20,12 @@ import {
   __NUMBER_ADD__,
   __NUMBER_TO_STRING__,
   __CONDITION__,
-  __NUMBER_IS_EVEN__
+  __NUMBER_IS_EVEN__,
+  __ARRAY_FIND_INDEX__,
+  __ARRAY_FIND__,
+  __NUMBER_EQ__
 } from '..';
+import { JWOperationError } from '../Error';
 
 
 describe('append', () => {
@@ -108,6 +112,26 @@ describe('reduce', () => {
     }
     expect(await JWResolver.run(transformer)).toBe(10);
   });
+
+
+  it('should throw an error without an initial value (accumulator)', async () => {
+    const transformer: TOperationType = {
+      $transformer: {
+        name: __ARRAY_REDUCE__,
+        value: { $static: [1, 2, 3, 4] },
+        arguments: [
+          {
+            $callback: {
+              $transformer: {
+                name: __NUMBER_ADD__
+              }
+            }
+          },
+        ]
+      }
+    }
+    await expect(JWResolver.run(transformer)).rejects.toBeInstanceOf(JWOperationError);
+  });
 });
 
 describe('map', () => {
@@ -175,5 +199,71 @@ describe('get_length', () => {
       }
     }
     expect(await JWResolver.run(transformer)).toBe(4);
+  });
+});
+
+
+describe('find_index', () => {
+  it('should return the index of the first element that satisfies the condition', async () => {
+    const transformer: TOperationType = {
+      $transformer: {
+        name: __ARRAY_FIND_INDEX__,
+        value: { $static: [1, 2, 3, 4] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_IS_EVEN__
+              }
+            }
+          }
+        ]
+      }
+    }
+    expect(await JWResolver.run(transformer)).toBe(1);
+  });
+});
+
+
+describe('find', () => {
+  it('should return the first element that satisfies the condition', async () => {
+    const transformer: TOperationType = {
+      $transformer: {
+        name: __ARRAY_FIND__,
+        value: { $static: [1, 2, 3, 4] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_IS_EVEN__
+              }
+            }
+          }
+        ]
+      }
+    }
+    expect(await JWResolver.run(transformer)).toBe(2);
+  });
+
+
+
+  it('should return undefined due of nothing found', async () => {
+    const transformer: TOperationType = {
+      $transformer: {
+        name: __ARRAY_FIND__,
+        value: { $static: [1, 2, 3, 4] },
+        arguments: [
+          {
+            $callback: {
+              $condition: {
+                name: __NUMBER_EQ__,
+                arguments: [{ $static: 5 }]
+              }
+            }
+          }
+        ]
+      }
+    }
+    expect(await JWResolver.run(transformer)).toBeUndefined();
   });
 });

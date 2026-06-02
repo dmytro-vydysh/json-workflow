@@ -2,15 +2,6 @@ import { JWCondition } from '../Condition';
 import { JWTransformer } from '../Transformer';
 import { JWOperationError } from '../Error';
 import {
-  type TResolverOperationTypeCondition,
-  type TResolverOperationTypeTransformer,
-  type TResolverOperationTypeConditionGroupOperatorAnd,
-  type TResolverOperationTypeConditionGroupOperatorOr,
-  type TResolverOperationTypeSwitch,
-  type TStatic,
-  type TResolver,
-  type TOperation,
-  type TCallback,
   type TValue,
   type TArgumentType,
   type IResolverOperationCondition,
@@ -19,25 +10,9 @@ import {
   type IResolverOperationConditionAnd,
   type IResolverOperationConditionOr,
   type IResolverOperationSwitch,
-  type TResolverOperationTypeConditional,
   type TOperationType,
   type JWContext,
-  type TContext,
   type TOperationTypeList,
-  type TAnd,
-  type TArgs,
-  type TCase,
-  type TCondition,
-  type TConditional,
-  type TDefault,
-  type TElse,
-  type TIf,
-  type TOr,
-  type TPipeline,
-  type TSwitch,
-  type TThen,
-  type TTransformer,
-  type TJWRootContext,
   __STATIC__,
   __RESOLVER__,
   __OPERATION__,
@@ -58,14 +33,10 @@ import {
   __PIPELINE__,
   __JWROOT__,
   Operations,
-  type TOperationTypeKey,
   Values,
-  type TValueTypeKey,
   ArgumentTypes,
-  type TArgumentTypeKey,
   IResolverOperationSwitchCase,
   IResolverOperationResolver,
-  TArgumentTypeCallback,
   IResolverOperationTransformerCallback
 } from './assets';
 
@@ -103,12 +74,13 @@ export class JWResolver {
    * @returns the value from context, or undefined if key is not found. If key is "$jwcontext", returns the entire context.
    */
   public static readContextValue(context: JWContext, key: string | '$jwcontext'): any {
-    if (key === __JWROOT__)
-      return context;
+    if (key === __JWROOT__){
+      return Object.fromEntries(context);
+    }
 
     /** If there is a missing context key, emit a warning, but still return undefined */
     if (!context.has(key))
-      process.emitWarning(`Context key "${key}" not found. `, { code: 'JWResolverContextKeyNotFound' });
+      process.emitWarning(`Context key "${key}" not found`);
 
     return context.get(key);
   }

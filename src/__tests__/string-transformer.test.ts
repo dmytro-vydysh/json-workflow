@@ -123,6 +123,21 @@ describe('substring', () => {
     }
     expect(await JWResolver.run(transformer)).toMatchInlineSnapshot(`"World"`);
   });
+
+
+  
+  it('should cut a string', async () => {
+    const transformer: TOperationType = {
+      $transformer: {
+        name: __STRING_SUBSTRING__,
+        value: { $static: 'Hello World' },
+        arguments: [
+          { $static: 6 },
+        ]
+      }
+    }
+    expect(await JWResolver.run(transformer)).toMatchInlineSnapshot(`"World"`);
+  });
 })
 
 
@@ -171,6 +186,21 @@ describe('replace_regex', () => {
         value: { $static: 'Hello World' },
         arguments: [
           { $static: new RegExp(/o/g).source },
+          { $static: 'a' }
+        ]
+      }
+    }
+    expect(await JWResolver.run(transformer)).toMatchInlineSnapshot(`"Hella Warld"`);
+  });
+
+  
+  it('should replace a string using a regular expression', async () => {
+    const transformer: TOperationType = {
+      $transformer: {
+        name: __STRING_REPLACE_REGEX__,
+        value: { $static: 'Hello World' },
+        arguments: [
+          { $static: /o/g },
           { $static: 'a' }
         ]
       }

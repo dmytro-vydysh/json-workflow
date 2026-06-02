@@ -1,3 +1,4 @@
+import { JWOperationArgumentError } from "../../Error";
 import { JWContext } from "../../Resolver/assets";
 import { JWChecker } from "../../utils/check";
 
@@ -120,7 +121,8 @@ export class JWStringCondition {
    */
   public static async matches_regex(context: JWContext, string1: string, string2: string | RegExp): Promise<boolean> {
     JWChecker.isString(string1, 1);
-    JWChecker.isString(string2, 2);
+    if (typeof string2 !== 'string' && !(string2 instanceof RegExp))
+      throw new JWOperationArgumentError(`Argument at position 2 must be a string or RegExp, got ${typeof string2}`);
     const _regexp = string2 instanceof RegExp ? string2 : new RegExp(string2);
     return _regexp.test(string1);
   }

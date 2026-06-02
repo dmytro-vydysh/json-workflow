@@ -1,3 +1,8 @@
+
+[![Test](https://github.com/dmytro-vydysh/json-workflow/actions/workflows/node.js.yml/badge.svg)](https://github.com/dmytro-vydysh/json-workflow/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/gh/dmytro-vydysh/json-workflow/graph/badge.svg)](https://codecov.io/gh/dmytro-vydysh/json-workflow)
+
+---
 # JSON Workflow
 
 A lightweight TypeScript library for building, executing and composing JSON-based workflows.
@@ -7,10 +12,6 @@ JSON Workflow allows you to describe conditions, transformations, branching logi
 
 ---
 
-[![Test](https://github.com/dmytro-vydysh/json-workflow/actions/workflows/node.js.yml/badge.svg)](https://github.com/dmytro-vydysh/json-workflow/actions/workflows/node.js.yml)
-[![codecov](https://codecov.io/gh/dmytro-vydysh/json-workflow/graph/badge.svg)](https://codecov.io/gh/dmytro-vydysh/json-workflow)
-
---
 
 # Features
 
