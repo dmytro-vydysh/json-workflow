@@ -165,8 +165,17 @@ describe('filter', () => {
         arguments: [
           {
             $callback: {
-              $condition: {
-                name: __NUMBER_IS_EVEN__
+              $and: {
+                operations: [
+                  { $condition: { name: __NUMBER_IS_EVEN__ } },
+                  {
+                    $or: {
+                      operations: [
+                        { $condition: { name: __NUMBER_IS_EVEN__ } }
+                      ]
+                    }
+                  }
+                ]
               }
             }
           }

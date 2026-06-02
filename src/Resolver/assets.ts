@@ -54,7 +54,7 @@ export type TArgumentTypeCallback = {
   | IResolverOperationTransformerCallback
   | IResolverOperationConditionAndCallback
   | IResolverOperationConditionOrCallback
-  | IResolverOperationSwitchCallback
+  // | IResolverOperationSwitchCallback
   | IResolverConditionalOperationCallback
   | IResolverOperationResolverCallback;
 };
@@ -71,32 +71,32 @@ export interface IResolverOperationTransformerCallback {
 
 export interface IResolverOperationConditionAndCallback {
   $and: {
-    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
+    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
   }
 }
 
 
 export interface IResolverOperationConditionOrCallback {
   $or: {
-    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
+    operations: Array<IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback>
   }
 }
 
 
-export interface IResolverOperationSwitchCallback {
-  $switch: {
-    cases: Array<IResolverOperationSwitchCaseCallback>;
-    $default?: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-  }
-}
+// export interface IResolverOperationSwitchCallback {
+//   $switch: {
+//     cases: Array<IResolverOperationSwitchCaseCallback>;
+//     $default?: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+//   }
+// }
 
 
 
 export interface IResolverConditionalOperationCallback {
   $conditional: {
-    $if: IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-    $then: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
-    $else: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverOperationSwitchCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+    $if: IResolverOperationConditionCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+    $then: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
+    $else: IResolverOperationConditionCallback | IResolverOperationTransformerCallback | IResolverOperationConditionAndCallback | IResolverOperationConditionOrCallback | IResolverConditionalOperationCallback | IResolverOperationResolverCallback;
   }
 }
 
@@ -167,9 +167,19 @@ export interface IResolverOperationSwitchCase {
     $operation: IResolverOperationCondition | IResolverOperationTransformer | IResolverOperationConditionAnd | IResolverOperationConditionOr | IResolverOperationSwitch | IResolverConditionalOperation | IResolverOperationResolver;
   }
 }
-export interface IResolverOperationSwitchCaseCallback {
-  $case: Omit<IResolverOperationSwitchCase, 'value'>;
-}
+// export interface IResolverOperationSwitchCaseCallback {
+//   $case: {
+//     valueTransformer?: IResolverOperationTransformerCallback;
+//     $operation:
+//     | IResolverOperationConditionCallback
+//     | IResolverOperationTransformerCallback
+//     | IResolverOperationConditionAndCallback
+//     | IResolverOperationConditionOrCallback
+//     | IResolverOperationSwitchCallback
+//     | IResolverConditionalOperationCallback
+//     | IResolverOperationResolverCallback;
+//   }
+// }
 
 /** Resolves a value, compares it against cases, and executes the first matching branch. */
 export interface IResolverOperationSwitch {

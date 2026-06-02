@@ -13,7 +13,10 @@ import {
   __NUMBER_FROM_STRING__,
   __NUMBER_IS_EVEN__,
   __NUMBER_SQRT__,
-  __NUMBER_POWER__
+  __NUMBER_POWER__,
+  __ARRAY_FILTER__,
+  __NUMBER_MULTIPLY__,
+  __NUMBER_IS_ODD__
 } from '..';
 
 
@@ -45,7 +48,7 @@ describe('conditional', () => {
   }
   `;
 
-  
+
   it(it_description, async () => {
     const operation: TOperationType = {
       $conditional: {
@@ -76,10 +79,49 @@ describe('conditional', () => {
             value: { $context: 'result_to_use' },
             arguments: [{ $static: 3 }],
           }
-        }
+        },
+        save: 'final_result'
       }
     };
 
     expect(await JWResolver.run(operation)).toEqual(27);
+  })
+});
+
+
+describe('conditional filter for array', () => {
+  it('should return filtered array based on conditional operation', async () => {
+    const operation: TOperationType = {
+      $transformer: {
+        name: __ARRAY_FILTER__,
+        value: { $static: [1, 2, 3, 4, 5] },
+        arguments: [
+          {
+            $callback: {
+              $conditional: {
+                $if: {
+                  $condition: {
+                    name: __NUMBER_IS_ODD__,
+                  }
+                },
+                $then: {
+                  $condition: {
+                    name: __NUMBER_IS_EVEN__,
+                    valueTransformer: { $transformer: { name: __NUMBER_POWER__, arguments: [{ $static: 2 }] } }
+                  }
+                },
+                $else: {
+                  $condition: {
+                    name: __NUMBER_IS_EVEN__,
+                    valueTransformer: { $transformer: { name: __NUMBER_POWER__, arguments: [{ $static: 3 }] } }
+                  }
+                },
+              }
+            }
+          }
+        ]
+      },
+    };
+    expect(await JWResolver.resolve(undefined, operation)).toEqual([]);
   })
 });

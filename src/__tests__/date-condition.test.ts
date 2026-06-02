@@ -45,7 +45,7 @@ yesterday.setDate(yesterday.getDate() - 1);
 const today = new Date();
 
 const weekend_day = new Date(2026, 5, 6);
-const weekday_day = new Date(2026, 5, 8); 
+const weekday_day = new Date(2026, 5, 8);
 
 describe('is before', () => {
   it('should return true if the value date is before the argument date', async () => {
@@ -322,12 +322,12 @@ describe('is day of week', () => {
       $condition: {
         name: __DATE_IS_DAY_OF_WEEK__,
         value: { $static: today },
-        arguments: [
-          { $static: (today.getDay() + 1) % 7 }
-        ]
+
       }
     };
-    expect(await JWResolver.run(condition)).toBe(false);
+
+    // also testing overwriting arguments
+    expect(await JWResolver.run(condition, undefined, [{ $static: (today.getDay() + 1) % 7 }])).toBe(false);
   });
 
   it('should throw an error if the day of week argument is invalid', async () => {

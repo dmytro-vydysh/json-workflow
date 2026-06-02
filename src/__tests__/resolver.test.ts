@@ -213,7 +213,7 @@ describe('resolver semplified 2', () => {
                 operations: [
                   { $condition: { name: __BOOLEAN_IS_TRUE__, valueTransformer: { $transformer: { name: __OBJECT_GET_KEY__, arguments: [{ $static: 'completed' }] } } } },
                   { $condition: { name: __NUMBER_EQ__, valueTransformer: { $transformer: { name: __OBJECT_GET_KEY__, arguments: [{ $static: 'userId' }] } }, arguments: [{ $static: 10 }] } }
-                ]
+                ],
               }
             }
           }

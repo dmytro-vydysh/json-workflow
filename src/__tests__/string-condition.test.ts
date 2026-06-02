@@ -1,4 +1,4 @@
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect, beforeAll } from '@jest/globals';
 import {
   JWResolver,
   TOperationType,
@@ -19,6 +19,12 @@ import {
   __STRING_IS_NOT_EMPTY__,
   __CONDITION__
 } from '../';
+
+beforeAll(() => {
+  JWResolver.registerResolver('regex_resolver', () => {
+    return '^hello'
+  });
+});
 
 describe('string eq', () => {
   it('should return true if the string is equal to the value', async () => {
@@ -222,7 +228,7 @@ describe('string matches regex', () => {
       $condition: {
         name: __STRING_MATCHES_REGEX__,
         value: { $static: 'hello world' },
-        arguments: [{ $static: '^hello' }]
+        arguments: [{ $resolver: 'regex_resolver' }]
       }
     }
     expect(await JWResolver.run(condition)).toBe(true);
