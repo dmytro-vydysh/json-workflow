@@ -76,8 +76,8 @@ export const JWTransformersMap = {
   'object.join': JWObjectTransformer.join,
 
 
-  'context.set_value': JWContextTransformer.setValue,
-  'context.get_value': JWContextTransformer.getValue,
+  'context.set_key': JWContextTransformer.setKey,
+  'context.get_key': JWContextTransformer.getKey,
 }
 
 export type TJWTransformerType = keyof typeof JWTransformersMap;
