@@ -15,7 +15,8 @@
   "type": "commonjs",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
