@@ -108,8 +108,7 @@ export class JWNumberCondition {
    * @returns True if the value is NaN, otherwise false.
    */
   public static async is_nan(context: JWContext, number: number): Promise<boolean> {
-    if (typeof number !== 'number') throw new JWOperationError(`Argument must be a number, got ${number}`);
-    return isNaN(number);
+    return isNaN(Number(number));
   }
 
   /**
@@ -119,8 +118,7 @@ export class JWNumberCondition {
    * @returns True if the value is a valid number, otherwise false.
    */
   public static async is_not_nan(context: JWContext, number: number): Promise<boolean> {
-    if (typeof number !== 'number') throw new JWOperationError(`Argument must be a number, got ${number}`);
-    return !isNaN(number);
+    return !isNaN(Number(number));
   }
 
   /**
