@@ -63,7 +63,8 @@ import {
   type TValueTypeKey,
   ArgumentTypes,
   type TArgumentTypeKey,
-  IResolverOperationSwitchCase
+  IResolverOperationSwitchCase,
+  IResolverOperationResolver
 } from './assets';
 
 
@@ -238,6 +239,9 @@ export class JWResolver {
 
     if (__PIPELINE__ in operation)
       return await JWResolver.runSequence(operation.$pipeline, context) as unknown as T;
+
+    if (__RESOLVER__ in operation)
+      return await OperationResolverResolver.resolve<T>(context, operation.$resolver);
 
     throw new JWOperationError(`Invalid operation type "${(operation as any).type}".`);
   }
@@ -525,5 +529,23 @@ export class OperationConditionalResolver {
 
     return result;
 
+  }
+}
+
+export class OperationResolverResolver {
+  public static async resolve<T extends any>(context: JWContext, $resolver: IResolverOperationResolver['$resolver']): Promise<T> {
+
+
+    const resolver = JWResolver.getResolver($resolver.name);
+    if (!resolver) throw new JWOperationError(`Custom resolver "${$resolver.name}" not found.`);
+
+    const value = await OperationValueResolver.resolveValue(context, $resolver.value ?? { $static: undefined });
+
+    const args = $resolver.arguments ? await OperationValueResolver.resolveArguments(context, $resolver.arguments) : [];
+
+    const resolverValue = await resolver(value, ...args);
+    if ($resolver.save && typeof $resolver.save === 'string')
+      context.set($resolver.save, resolverValue);
+    return resolverValue as T;
   }
 }
