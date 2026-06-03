@@ -92,9 +92,9 @@ export class JWDateTransformer {
   }
 
   /** Formats the date using locale-aware formatting options. */
-  public static async toLocaleString(context: JWContext, date: Date, locale?: string, options: Intl.DateTimeFormatOptions = {}): Promise<string> {
+  public static async toLocaleString(context: JWContext, date: Date, locale?: string): Promise<string> {
     JWChecker.isDate(date, 1);
-    return JWGetter.getDate(date).toLocaleString(locale, options);
+    return JWGetter.getDate(date).toLocaleString(locale);
   }
 
   /** Converts the date to an ISO-8601 string. */

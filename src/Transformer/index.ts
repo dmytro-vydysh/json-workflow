@@ -11,7 +11,7 @@ export const JWTransformersMap = {
 
   /** Trasformatori numerici */
   'number.add': JWNumberTransformer.add,
-  'number.substract': JWNumberTransformer.substract,
+  'number.subtract': JWNumberTransformer.subtract,
   'number.multiply': JWNumberTransformer.multiply,
   'number.divide': JWNumberTransformer.divide,
   'number.modulo': JWNumberTransformer.modulo,

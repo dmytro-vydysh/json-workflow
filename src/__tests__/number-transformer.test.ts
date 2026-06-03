@@ -6,7 +6,7 @@ import {
   __STATIC__,
   __OPERATION__,
   __NUMBER_ADD__,
-  __NUMBER_SUBSTRACT__,
+  __NUMBER_SUBTRACT__,
   __NUMBER_MULTIPLY__,
   __NUMBER_DIVIDE__,
   __NUMBER_MODULO__,
@@ -41,11 +41,11 @@ describe('add', () => {
 });
 
 
-describe('substract', () => {
-  it('should substract two numbers', async () => {
+describe('subtract', () => {
+  it('should subtract two numbers', async () => {
     const transformer: TOperationType = {
       $transformer: {
-        name: __NUMBER_SUBSTRACT__,
+        name: __NUMBER_SUBTRACT__,
         value: { $static: 5 },
         arguments: [{ $static: 3 }]
       }

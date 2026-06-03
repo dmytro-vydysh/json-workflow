@@ -5,8 +5,8 @@ import { JWChecker } from "../../utils/check";
 export class JWStringTransformer {
   /** Concatenates all provided strings without a separator. */
   public static async concat(context: JWContext, ...strings: string[]): Promise<string> {
-    strings.forEach((str, index) => { if (typeof str !== 'undefined') JWChecker.isString(str, index + 1) });
-    return strings.filter(str => typeof str !== 'undefined').join('');
+    strings.forEach((str, index) => { if (typeof str !== 'undefined' && str !== null) JWChecker.isString(str, index + 1) });
+    return strings.filter(str => typeof str !== 'undefined' && str !== null).join('');
   }
 
   /** Joins an array of strings using the provided separator. */

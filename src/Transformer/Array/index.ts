@@ -4,11 +4,24 @@ import { TOperationType, JWContext, TValue } from "../../Resolver/assets";
 import { JWChecker } from "../../utils/check";
 
 
+
 /**
  * Collection of array transformer helpers used to manipulate
  * and transform array values.
  */
 export class JWArrayTransformer {
+
+  /**
+   * Appends a value to the end of an array.
+   *
+   * @param array - Source array.
+   * @param value - Value to append.
+   * @returns A new array with the value added at the end.
+   */
+  public static async append(context: JWContext, array: any[], value: any): Promise<any[]> {
+    JWChecker.isArray(array, 1);
+    return [...array, value];
+  }
 
   /**
    * Merges multiple arrays into a new array.
@@ -23,21 +36,16 @@ export class JWArrayTransformer {
     return [...array, ...values.flat()];
   }
 
+  /**
+   * 
+   * @param context context of the entire pipeline
+   * @param array array to flat
+   * @param depth 
+   * @returns flatted array
+   */
   public static async flat(context: JWContext, array: any[], depth?: number): Promise<any[]> {
     JWChecker.isArray(array, 1);
     return array.flat(depth);
-  }
-
-  /**
-   * Appends a value to the end of an array.
-   *
-   * @param array - Source array.
-   * @param value - Value to append.
-   * @returns A new array with the value added at the end.
-   */
-  public static async append(context: JWContext, array: any[], value: any): Promise<any[]> {
-    JWChecker.isArray(array, 1);
-    return [...array, value];
   }
 
   /**
@@ -88,7 +96,7 @@ export class JWArrayTransformer {
 
 
     return await array.reduce(
-      async (accPromise, item) => {
+      async (accPromise, item, currentIndex, arrayRef) => {
         const acc = await accPromise;
         return await JWResolver.resolve(context, operation, { $static: item }, [{ $static: acc }]);
       },
@@ -105,7 +113,7 @@ export class JWArrayTransformer {
   public static async map(context: JWContext, array: any[], operation: TOperationType): Promise<Array<any>> {
     JWChecker.isArray(array, 1);
 
-    return await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
+    return await Promise.all(array.map(async (item:any, index:number, arrayRef:any[]) => await JWResolver.resolve(context, operation, { $static: item }, [{ $static: index }, { $static: arrayRef }])));
   }
 
   /**
@@ -120,7 +128,7 @@ export class JWArrayTransformer {
   public static async filter(context: JWContext, array: any[], operation: TOperationType): Promise<Array<any>> {
     JWChecker.isArray(array, 1);
 
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
+    const results = await Promise.all(array.map(async (item:any, index:number, arrayRef:any[]) => await JWResolver.resolve(context, operation, { $static: item }, [{ $static: index }, { $static: arrayRef }])));
     return array.filter((_, index) => results[index] === true);
   }
 
@@ -158,7 +166,7 @@ export class JWArrayTransformer {
    */
   public static async find_index(context: JWContext, array: any[], operation: TOperationType): Promise<number> {
     JWChecker.isArray(array, 1);
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
+    const results = await Promise.all(array.map(async (item:any) => await JWResolver.resolve(context, operation, { $static: item })));
     return results.findIndex(result => result === true);
   }
 
@@ -173,7 +181,7 @@ export class JWArrayTransformer {
    */
   public static async find(context: JWContext, array: any[], operation: TOperationType): Promise<any> {
     JWChecker.isArray(array, 1);
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, operation, { $static: item })));
+    const results = await Promise.all(array.map(async (item:any) => await JWResolver.resolve(context, operation, { $static: item })));
     const index = results.findIndex(result => result === true);
     return index !== -1 ? array[index] : undefined;
   }

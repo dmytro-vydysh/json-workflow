@@ -12,7 +12,7 @@ export class JWNumberTransformer {
   }
 
   /** Subtracts each subsequent number from the first one. */
-  public static async substract(context: JWContext, ...numbers: number[]): Promise<number> {
+  public static async subtract(context: JWContext, ...numbers: number[]): Promise<number> {
     numbers.forEach((num, index) => JWChecker.isNumber(num, index + 1));
     return numbers.reduce((acc, num) => acc - num);
   }

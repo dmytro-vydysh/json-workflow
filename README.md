@@ -16,8 +16,8 @@ JSON Workflow allows you to describe conditions, transformations, branching logi
 # Features
 
 * Conditions
-* Transformers
-* If / Else branching
+* Transformers 
+* If / Then / Else branching
 * Switch / Case
 * AND / OR condition groups
 * Nested operations
@@ -50,13 +50,9 @@ import {
 const result = await JWResolver.run<number>({
   $transformer: {
     name: __NUMBER_MULTIPLY__,
-    value: {
-      $static: 5
-    },
+    value: { $static: 5 },
     arguments: [
-      {
-        $static: 10
-      }
+      { $static: 10 }
     ]
   }
 });
@@ -92,12 +88,26 @@ $resolver
 $operation
 $context
 ```
+The value is the first, main argument you want to use in a function. Other values are rappresented by "arguments"
 
 ---
 
+
+
+Arguments consume values from:
+
+```ts
+$static
+$resolver
+$operation
+$context
+$callback
+```
+
+
 # Transformers
 
-Transformers receive a value and return a transformed value.
+Transformers receive a main value and other arguments, and then return a transformed value.
 
 ```ts
 {
@@ -126,13 +136,9 @@ Conditions always return a boolean.
 {
   $condition: {
     name: "number.gt",
-    value: {
-      $static: 10
-    },
+    value: { $static: 10 },
     arguments: [
-      {
-        $static: 5
-      }
+      {  $static: 5 }
     ]
   }
 }
@@ -158,21 +164,15 @@ The output of an operation can be used as the input of another operation.
       $operation: {
         $transformer: {
           name: "number.add",
-          value: {
-            $static: 5
-          },
+          value: { $static: 5 },
           arguments: [
-            {
-              $static: 3
-            }
+            { $static: 3 }
           ]
         }
       }
     },
     arguments: [
-      {
-        $static: 10
-      }
+      { $static: 10 }
     ]
   }
 }
@@ -230,15 +230,11 @@ Custom resolvers can also be used as value sources.
     value: {
       $resolver: "get_user",
       $args: [
-        {
-          $static: 1
-        }
+        { $static: 1 }
       ]
     },
     arguments: [
-      {
-        $static: "name"
-      }
+      { $static: "name" }
     ]
   }
 }
@@ -260,13 +256,9 @@ Results can be stored in a shared execution context.
 {
   $transformer: {
     name: "number.multiply",
-    value: {
-      $static: 5
-    },
+    value: { $static: 5 },
     arguments: [
-      {
-        $static: 10
-      }
+      { $static: 10 }
     ],
     save: "result"
   }
@@ -291,7 +283,7 @@ Access the entire context:
 
 ---
 
-# Conditional (If / Else)
+# Conditional (If / Then / Else)
 
 ```ts
 {
@@ -414,7 +406,13 @@ Result:
           }
         }
       }
-    ]
+    ],
+    $default: {
+      $transformer: {
+        name: "string.to_lower",
+        value: { $static: "NOT APPROVED" }
+      }
+    }
   }
 }
 ```
@@ -423,7 +421,7 @@ Result:
 
 # Pipelines
 
-Execute multiple operations sequentially.
+Execute multiple operations sequentially and returns a context as object.
 
 ```ts
 await JWResolver.runSequence([
@@ -524,6 +522,18 @@ Result:
 Filter completed todos belonging to user 10.
 
 ```ts
+JWResolver.registerResolver('fetch_todos', async () => {
+  let _return: Record<string, any> = {};
+  const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+  _return.ok = response.ok;
+  _return.statusText = response.statusText;
+
+  if (response.ok)
+    _return.data = await response.json();
+
+  return _return;
+})
+
 const operation = {
   $transformer: {
     name: "array.filter",
@@ -631,3 +641,18 @@ catch (error) {
 # License
 
 MIT
+
+
+
+## Author
+
+- [@dmytro-vydysh](https://github.com/dmytro-vydysh/deep-json-validation)
+
+
+![Logo](https://dmytrovydysh.com/logo.png)
+
+
+
+## Support
+
+For support, email info@dmytrovydysh.com

@@ -46,7 +46,7 @@ export class JWArrayCondition {
 
 
 
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, { ...operation }, { $static: item })));
+    const results = await Promise.all(array.map(async (item, index, arrayRef) => await JWResolver.resolve(context, { ...operation }, { $static: item }, [{ $static: index }, { $static: arrayRef }])));
 
     return results.every(result => result === true);
 
@@ -59,7 +59,7 @@ export class JWArrayCondition {
    */
   public static async some(context: JWContext, array: Array<any>, operation: TOperationType): Promise<boolean> {
     JWChecker.isArray(array, 1);
-    const results = await Promise.all(array.map(async item => await JWResolver.resolve(context, { ...operation }, { $static: item })));
+    const results = await Promise.all(array.map(async (item, index, arrayRef) => await JWResolver.resolve(context, { ...operation }, { $static: item }, [{ $static: index }, { $static: arrayRef }])));
 
     return results.some(result => result === true);
   }

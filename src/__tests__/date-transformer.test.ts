@@ -76,7 +76,7 @@ function add(date: Date, ammountValue: number, unit: 'seconds' | 'minutes' | 'ho
   return newDate;
 }
 
-function substract(date: Date, ammountValue: number, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Date {
+function subtract(date: Date, ammountValue: number, unit: 'seconds' | 'minutes' | 'hours' | 'days' | 'months' | 'years'): Date {
 
 
   const newDate = new Date(date);
@@ -201,7 +201,7 @@ describe('subtract', () => {
         ]
       }
     }
-    expect(await JWResolver.run(transformer)).toEqual(substract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'seconds'));
+    expect(await JWResolver.run(transformer)).toEqual(subtract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'seconds'));
   });
 
   it('should subtract a 1 minute of time from the date', async () => {
@@ -215,7 +215,7 @@ describe('subtract', () => {
         ]
       }
     }
-    expect(await JWResolver.run(transformer)).toEqual(substract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'minutes'));
+    expect(await JWResolver.run(transformer)).toEqual(subtract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'minutes'));
   });
 
   it('should subtract a 1 hour of time from the date', async () => {
@@ -229,7 +229,7 @@ describe('subtract', () => {
         ]
       }
     }
-    expect(await JWResolver.run(transformer)).toEqual(substract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'hours'));
+    expect(await JWResolver.run(transformer)).toEqual(subtract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'hours'));
   });
 
   it('should subtract a 1 day of time from the date', async () => {
@@ -243,7 +243,7 @@ describe('subtract', () => {
         ]
       }
     }
-    expect(await JWResolver.run(transformer)).toEqual(substract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'days'));
+    expect(await JWResolver.run(transformer)).toEqual(subtract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'days'));
   });
 
   it('should subtract a 1 month of time from the date', async () => {
@@ -257,7 +257,7 @@ describe('subtract', () => {
         ]
       }
     }
-    expect(await JWResolver.run(transformer)).toEqual(substract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'months'));
+    expect(await JWResolver.run(transformer)).toEqual(subtract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'months'));
   });
 
   it('should subtract a 1 year of time from the date', async () => {
@@ -271,7 +271,7 @@ describe('subtract', () => {
         ]
       }
     }
-    expect(await JWResolver.run(transformer)).toEqual(substract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'years'));
+    expect(await JWResolver.run(transformer)).toEqual(subtract(new Date(2026, 5, 1, 0, 0, 0, 0), 1, 'years'));
   });
 
 });
