@@ -1,7 +1,9 @@
 
 [![Test](https://github.com/dmytro-vydysh/json-workflow/actions/workflows/node.js.yml/badge.svg)](https://github.com/dmytro-vydysh/json-workflow/actions/workflows/node.js.yml)
 [![codecov](https://codecov.io/gh/dmytro-vydysh/json-workflow/graph/badge.svg)](https://codecov.io/gh/dmytro-vydysh/json-workflow)
-
+[![Socket Badge](https://badge.socket.dev/npm/package/json-workflow/0.0.1)](https://badge.socket.dev/npm/package/json-workflow/0.0.1)
+[![npm version](https://img.shields.io/npm/v/json-workflow.svg)](https://www.npmjs.com/package/json-workflow)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 ---
 # JSON Workflow
 
