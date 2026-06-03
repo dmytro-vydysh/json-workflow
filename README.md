@@ -515,6 +515,80 @@ Result:
 [3, 4, 5]
 ```
 
+
+---
+
+# Value transformer
+
+You can access the "value" inside $callback using another operation inside valueTransformer.\
+You'll have the ability to transform the value (which will in turn be injected into the $callback operation,\
+for example using $callback as an operation inside array.map/filter/reduce) and override it.
+
+---
+``` ts
+const people = [
+      { name: 'John', age: 16 },
+      { name: 'Emma', age: 17 },
+      { name: 'Liam', age: 18 },
+      { name: 'Olivia', age: 19 },
+      { name: 'Noah', age: 20 },
+      { name: 'Sophia', age: 21 },
+      { name: 'James', age: 22 },
+      { name: 'Isabella', age: 23 },
+      { name: 'Lucas', age: 24 },
+      { name: 'Mia', age: 25 },
+      ...
+      { name: 'Chloe', age: 47 },
+      { name: 'Samuel', age: 48 },
+      { name: 'Victoria', age: 49 },
+      { name: 'Andrew', age: 50 },
+      { name: 'Lily', age: 51 },
+      { name: 'Christopher', age: 52 },
+      { name: 'Hannah', age: 53 },
+      { name: 'Joshua', age: 54 },
+      { name: 'Zoey', age: 55 }
+    ]
+    const operation: TOperationType = {
+      $transformer: {
+        name: __ARRAY_FILTER__,
+        value: { $static: people },
+        arguments: [
+          {
+            $callback: {
+              $and: {
+                operations: [
+                  {
+                    $condition: {
+                      name: __NUMBER_GTE__,
+                      valueTransformer: {
+                        $transformer: {
+                          name: __OBJECT_GET_KEY__,
+                          arguments: [{ $static: 'age' }]
+                        }
+                      },
+                      arguments: [{ $static: 18 }]
+                    }
+                  },
+                  {
+                    $condition: {
+                      name: __NUMBER_LTE__,
+                      valueTransformer: {
+                        $transformer: {
+                          name: __OBJECT_GET_KEY__,
+                          arguments: [{ $static: 'age' }]
+                        }
+                      },
+                      arguments: [{ $static: 50 }]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+```
 ---
 
 # Real World Example
